@@ -15,6 +15,7 @@ public class PlayerInput : MonoBehaviour {
 	Player player;
 	Rigidbody2D rb2d;
 	GameObject pickedUpObject;
+	GameObject stationFound;
 
 	void Awake () {
 
@@ -30,64 +31,86 @@ public class PlayerInput : MonoBehaviour {
 
 	void ProcessMovementInput () {
 
-		Vector2 directionVector = Vector2.zero;
+		float horizontalInput = player.GetAxis ("Horizontal");
+		float verticalInput = player.GetAxis ("Vertical");
 
-		if(player.GetAxis("Horizontal") != 0) {
+		if (horizontalInput != 0 || verticalInput != 0) {
 
-			directionVector += new Vector2(player.GetAxis("Horizontal"), 0);
-		}
+			Vector2 directionVector = new Vector2 (horizontalInput, verticalInput);
 
-		if(player.GetAxis("Vertical") != 0) {
+			if (directionVector.magnitude > 0.5f) {
 
-			directionVector += new Vector2(0, player.GetAxis("Vertical"));
-		}
+				float angleFacing = Mathf.Atan2 (player.GetAxis ("Vertical"), player.GetAxis ("Horizontal")) * Mathf.Rad2Deg;
+				this.transform.rotation = Quaternion.Euler (0, 0, angleFacing);
 
-		if(directionVector != Vector2.zero) {
-			
-			float angleFacing = Mathf.Atan2(player.GetAxis("Vertical"), player.GetAxis("Horizontal")) * Mathf.Rad2Deg;
-			this.transform.rotation = Quaternion.Euler(0, 0, angleFacing);
-
-			rb2d.MovePosition((Vector2)this.transform.position + moveSpeed * directionVector * Time.deltaTime);
+				rb2d.MovePosition ((Vector2)this.transform.position + moveSpeed * directionVector * Time.deltaTime);
+			}
 		}
 	}
 
 	void ProcessActions () {
 
-		if(player.GetButtonDown("Pickup")) {
+		if (player.GetButtonDown ("Pickup")) {
 
-			if(pickedUpObject != null) {
+			if (pickedUpObject != null) {
 
-				FindStationToPlace();
+				FindStationToPlace ();
 			}
-			else if(pickedUpObject == null) {
+			else if (pickedUpObject == null) {
 
-				FindPickup();
+				FindPickup ();
 			}
 		}
-		else if(player.GetButtonDown("Action")) {
+		else if (player.GetButtonDown ("Action")) {
 
-			if(pickedUpObject == null) {
+			if (pickedUpObject == null && stationFound == null) {
 				
-				FindStationToActOn();
+				FindStationToActOn ();
+			}
+		}
+		else if (player.GetButton ("Action")) {
+
+			if (stationFound) {
+
+				if (stationFound.CompareTag ("Forge") && pickedUpObject == null) {
+
+					stationFound.GetComponent<Forge> ().ForgeWeapon ();
+				}
+				if (stationFound.CompareTag ("Anvil")) {
+
+					stationFound.GetComponent<Anvil> ().HammerOre ();
+				}
+			}
+		}
+		else if (player.GetButtonUp ("Action")) {
+
+			if (stationFound) {
+
+				if (stationFound.CompareTag ("Forge")) {
+
+					stationFound.GetComponent<Forge> ().ResetForgingBar ();
+				}
 			}
 		}
 	}
 
 	void FindStationToPlace () {
 
-		var layerMask = 1 << 8;
-		layerMask = ~layerMask;
-		Collider2D[] collidersFound = Physics2D.OverlapCircleAll((Vector2)(this.transform.position + this.transform.right), 1, layerMask);
-		//Debug.Log("stationsFound: " + collidersFound.Length);
+		Collider2D[] collidersFound = GetCollidersInFront ();
 
 		if(collidersFound.Length > 0) {
 
 			foreach (Collider2D collider in collidersFound) {
 
-				if(collider.CompareTag("Anvil") && collider.transform.childCount == 0) {
+				if (collider.CompareTag ("Forge")) {
 
-					pickedUpObject.transform.SetParent(collider.transform);
-					pickedUpObject.transform.localPosition = Vector3.zero;
+					collider.GetComponent<Forge> ().UpdateMetalAmount (1);
+					Destroy (pickedUpObject.gameObject);
+					pickedUpObject = null;
+				}
+				else if(collider.CompareTag("Anvil") && collider.GetComponent<Anvil>().GetPlacedObject() == null) {
+
+					collider.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
 					pickedUpObject = null;
 				}
 			}
@@ -108,10 +131,7 @@ public class PlayerInput : MonoBehaviour {
 
 	void FindPickup () {
 
-		var layerMask = 1 << 8;
-		layerMask = ~layerMask;
-		Collider2D[] collidersFound = Physics2D.OverlapCircleAll((Vector2)(this.transform.position + this.transform.right), 1, layerMask);
-		//Debug.Log("collidersFound: " + pickupsFound.Length);
+		Collider2D[] collidersFound = GetCollidersInFront ();
 
 		foreach (Collider2D collider in collidersFound) {
 
@@ -120,6 +140,7 @@ public class PlayerInput : MonoBehaviour {
 				pickedUpObject = collider.gameObject;
 				pickedUpObject.transform.SetParent(carryPosition);
 				pickedUpObject.transform.localPosition = Vector3.zero;
+				pickedUpObject.transform.localRotation = Quaternion.identity;
 				pickedUpObject.GetComponent<Collider2D>().enabled = false;
 				pickedUpObject.GetComponent<Rigidbody2D>().isKinematic = true;
 				break;
@@ -129,6 +150,39 @@ public class PlayerInput : MonoBehaviour {
 
 	void FindStationToActOn () {
 
+		Collider2D[] collidersFound = GetCollidersInFront ();
 
+		if(collidersFound.Length > 0) {
+
+			foreach (Collider2D collider in collidersFound) {
+
+				if (collider.CompareTag ("Forge")) {
+
+					stationFound = collider.gameObject;
+				}
+				else if(collider.CompareTag("Anvil")) {
+
+					stationFound = collider.gameObject;
+				}
+			}
+		}
+	}
+
+	Collider2D[] GetCollidersInFront () {
+
+		var layerMask = 1 << 8;
+		layerMask = ~layerMask;
+		Collider2D[] collidersFound = Physics2D.OverlapCircleAll((Vector2)(this.transform.position + this.transform.right), 0.5f, layerMask);
+		//Debug.Log("stationsFound: " + collidersFound.Length);
+		return collidersFound;
+	}
+
+	public void RecieveItem (GameObject item) {
+
+		pickedUpObject = item;
+		pickedUpObject.transform.SetParent (carryPosition);
+		pickedUpObject.transform.localPosition = Vector3.zero;
+		pickedUpObject.transform.localRotation = Quaternion.identity;
+		pickedUpObject.GetComponent<Collider2D> ().enabled = false;
 	}
 }
