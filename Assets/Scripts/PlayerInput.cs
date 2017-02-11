@@ -45,6 +45,25 @@ public class PlayerInput : MonoBehaviour {
 
 				rb2d.MovePosition ((Vector2)this.transform.position + moveSpeed * directionVector * Time.deltaTime);
 			}
+
+			if (stationFound != null && Vector3.Distance (this.transform.position, stationFound.transform.position) > 1.5f) {
+
+				if (stationFound.CompareTag ("Forge")) {
+
+					stationFound.GetComponent<Forge> ().RemoveForgingPlayer ();
+				}
+				else if (stationFound.CompareTag ("Anvil")) {
+
+
+				}
+				else if (stationFound.CompareTag ("Woodworks")) {
+					
+					stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
+					stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
+				}
+
+				stationFound = null;
+			}
 		}
 	}
 
@@ -70,15 +89,19 @@ public class PlayerInput : MonoBehaviour {
 		}
 		else if (player.GetButton ("Action")) {
 
-			if (stationFound) {
+			if (stationFound && pickedUpObject == null) {
 
-				if (stationFound.CompareTag ("Forge") && pickedUpObject == null) {
+				if (stationFound.CompareTag ("Forge")) {
 
 					stationFound.GetComponent<Forge> ().ForgeWeapon ();
 				}
-				if (stationFound.CompareTag ("Anvil")) {
+				else if (stationFound.CompareTag ("Anvil")) {
 
 					stationFound.GetComponent<Anvil> ().HammerOre ();
+				}
+				else if (stationFound.CompareTag ("Woodworks")) {
+					
+					stationFound.GetComponent<Woodworks> ().ChopWood ();
 				}
 			}
 		}
@@ -89,6 +112,11 @@ public class PlayerInput : MonoBehaviour {
 				if (stationFound.CompareTag ("Forge")) {
 
 					stationFound.GetComponent<Forge> ().ResetForgingBar ();
+				}
+				else if (stationFound.CompareTag ("Woodworks")) {
+
+					stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
+					stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
 				}
 			}
 		}
@@ -143,6 +171,7 @@ public class PlayerInput : MonoBehaviour {
 				pickedUpObject.transform.localRotation = Quaternion.identity;
 				pickedUpObject.GetComponent<Collider2D>().enabled = false;
 				pickedUpObject.GetComponent<Rigidbody2D>().isKinematic = true;
+				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon>().enabled = false; }
 				break;
 			}
 		}
@@ -156,13 +185,19 @@ public class PlayerInput : MonoBehaviour {
 
 			foreach (Collider2D collider in collidersFound) {
 
-				if (collider.CompareTag ("Forge")) {
+				if (collider.CompareTag ("Forge") || collider.CompareTag ("Anvil")) {
 
 					stationFound = collider.gameObject;
 				}
-				else if(collider.CompareTag("Anvil")) {
+				else if (collider.CompareTag ("Woodworks")) {
 
 					stationFound = collider.gameObject;
+					stationFound.GetComponent<Woodworks> ().SetPlayerCutting (this.gameObject);
+				}
+				else if (collider.CompareTag ("Tannery")) {
+
+					stationFound = collider.gameObject;
+					stationFound.GetComponent<Tannery> ().PlaceLeather ();
 				}
 			}
 		}
@@ -177,7 +212,7 @@ public class PlayerInput : MonoBehaviour {
 		return collidersFound;
 	}
 
-	public void RecieveItem (GameObject item) {
+	public void ReceiveItem (GameObject item) {
 
 		pickedUpObject = item;
 		pickedUpObject.transform.SetParent (carryPosition);

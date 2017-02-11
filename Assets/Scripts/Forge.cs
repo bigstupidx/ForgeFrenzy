@@ -12,8 +12,8 @@ public class Forge : MonoBehaviour {
 	[SerializeField] float maxForgeTime = 3;
 
 	[Header("References")]
-	[SerializeField] Image metalBarFill;
 	[SerializeField] GameObject forgingBar;
+	[SerializeField] Image metalBarFill;
 	[SerializeField] Image forgingBarFill;
 	[SerializeField] GameObject forgedSwordPrefab;
 	[SerializeField] GameObject forgedAxePrefab;
@@ -27,7 +27,7 @@ public class Forge : MonoBehaviour {
 
 	void Awake () {
 
-		metalBarFill.fillAmount = (metalAmount / maxMetalAmount);
+		metalBarFill.fillAmount = 0;
 		ResetForgingBar ();
 	}
 
@@ -83,7 +83,7 @@ public class Forge : MonoBehaviour {
 					break;
 				}
 
-				forgingPlayer.GetComponent<PlayerInput> ().RecieveItem (newWeapon);
+				forgingPlayer.GetComponent<PlayerInput> ().ReceiveItem (newWeapon);
 			}
 		}
 	}
