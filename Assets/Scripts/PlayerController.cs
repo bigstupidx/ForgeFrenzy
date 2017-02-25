@@ -44,6 +44,26 @@ public class PlayerController : MonoBehaviour {
 
 			rb.MovePosition(this.transform.position + moveSpeed * new Vector3(horizontalAxis, 0, verticalAxis) * Time.deltaTime);
 		}
+
+		// Cancel any station actions if player moves away from it
+		if (stationFound != null && Vector3.Distance (this.transform.position, stationFound.transform.position) > 2.5f) {
+
+			if (stationFound.CompareTag ("Forge")) {
+
+				stationFound.GetComponent<Forge> ().RemoveForgingPlayer ();
+			}
+			else if (stationFound.CompareTag ("Anvil")) {
+
+
+			}
+			else if (stationFound.CompareTag ("Woodworks")) {
+
+				stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
+				stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
+			}
+
+			stationFound = null;
+		}
 	}
 
 	void ProcessActions () {
@@ -97,6 +117,8 @@ public class PlayerController : MonoBehaviour {
 					stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
 					stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
 				}
+
+				stationFound = null;
 			}
 		}
 	}
@@ -123,6 +145,12 @@ public class PlayerController : MonoBehaviour {
 					collider.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
 					pickedUpObject = null;
 				}
+				else if(collider.CompareTag("Tannery") && pickedUpObject.name.Contains("Broken Leather")) {
+
+					stationFound = true;
+					collider.GetComponent<Tannery>().PlaceLeather(pickedUpObject);
+					pickedUpObject = null;
+				}
 			}
 		}
 
@@ -146,13 +174,14 @@ public class PlayerController : MonoBehaviour {
 		Collider[] collidersFound = GetCollidersInFront ();
 		//Debug.Log ("Pickups Found: " + collidersFound.Length);
 		foreach (Collider collider in collidersFound) {
-			//Debug.Log("Pickup found: " + collider.name);
+			
 			if(collider.transform.CompareTag("Pickup")) {
 				
 				pickedUpObject = collider.gameObject;
 				pickedUpObject.transform.SetParent(carryPosition);
 				pickedUpObject.transform.localPosition = Vector3.zero;
 				pickedUpObject.transform.localRotation = Quaternion.identity;
+				pickedUpObject.transform.localScale = Vector3.one;
 				pickedUpObject.GetComponent<Collider>().enabled = false;
 				pickedUpObject.GetComponent<Rigidbody>().isKinematic = true;
 				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon>().enabled = false; }
@@ -181,7 +210,6 @@ public class PlayerController : MonoBehaviour {
 				else if (collider.CompareTag ("Tannery")) {
 
 					stationFound = collider.gameObject;
-					stationFound.GetComponent<Tannery> ().PlaceLeather ();
 				}
 			}
 		}

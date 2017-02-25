@@ -16,14 +16,12 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] GameObject brokenMetal;
 	[SerializeField] GameObject brokenLeather;
 	[SerializeField] GameObject brokenWood;
-	[SerializeField] GameObject camera1;
-	[SerializeField] GameObject camera2;
 
 
 	Vector3 endPosition;
 
 	void Awake () {
-		camera2.SetActive (false);
+
 		this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, startingZ);
 		endPosition = new Vector3(this.transform.position.x, this.transform.position.y, endZ);
 		StartCoroutine (SpawnItem ());
@@ -32,20 +30,6 @@ public class EnemyLine : MonoBehaviour {
 	void Update () {
 
 		this.transform.position = Vector3.Lerp(this.transform.position, endPosition, moveSpeed * Time.deltaTime);
-
-		if (Input.GetKeyDown (KeyCode.Q)) {
-
-			if (camera1.activeSelf) {
-
-				camera1.SetActive (false);
-				camera2.SetActive (true);
-			}
-			else {
-
-				camera1.SetActive (true);
-				camera2.SetActive (false);
-			}
-		}
 	}
 
 	IEnumerator SpawnItem () {
