@@ -5,7 +5,7 @@ using Rewired;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Collider), typeof(Rigidbody))]
-public class NewPlayer : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
 	[Header("Parameters")]
 	[SerializeField] int inputID;
@@ -76,7 +76,7 @@ public class NewPlayer : MonoBehaviour {
 				}
 				else if (stationFound.CompareTag ("Anvil")) {
 
-					stationFound.GetComponent<Anvil> ().HammerOre ();
+					stationFound.GetComponent<Anvil> ().Hammer ();
 				}
 				else if (stationFound.CompareTag ("Woodworks")) {
 
@@ -104,46 +104,51 @@ public class NewPlayer : MonoBehaviour {
 	void FindStationToPlace () {
 
 		Collider[] stationsFound = GetCollidersInFront ();
+		bool stationFound = false;
 
 		if(stationsFound.Length > 0) {
 
 			foreach (Collider collider in stationsFound) {
-				Debug.Log ("found: " + collider.name);
+				
 				if (collider.CompareTag ("Forge")) {
 
+					stationFound = true;
 					collider.GetComponent<Forge> ().UpdateMetalAmount (1);
 					Destroy (pickedUpObject.gameObject);
 					pickedUpObject = null;
 				}
 				else if(collider.CompareTag("Anvil") && collider.GetComponent<Anvil>().GetPlacedObject() == null) {
 
+					stationFound = true;
 					collider.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
 					pickedUpObject = null;
 				}
 			}
 		}
-		else {
+
+		if(!stationFound || stationsFound.Length == 0) {
 
 			DropItem();
 		}
 	}
 
 	void DropItem () {
-		Debug.Log ("Dropping item");
+		
 		pickedUpObject.transform.parent = null;
 		pickedUpObject.GetComponent<Collider>().enabled = true;
 		pickedUpObject.GetComponent<Rigidbody>().isKinematic = false;
+		pickedUpObject.transform.rotation = Quaternion.Euler(0, 180, 0);
 		pickedUpObject = null;
 	}
 
 	void FindPickup () {
 
 		Collider[] collidersFound = GetCollidersInFront ();
-		Debug.Log ("Pickups Found: " + collidersFound.Length);
+		//Debug.Log ("Pickups Found: " + collidersFound.Length);
 		foreach (Collider collider in collidersFound) {
-
+			//Debug.Log("Pickup found: " + collider.name);
 			if(collider.transform.CompareTag("Pickup")) {
-
+				
 				pickedUpObject = collider.gameObject;
 				pickedUpObject.transform.SetParent(carryPosition);
 				pickedUpObject.transform.localPosition = Vector3.zero;
@@ -184,9 +189,7 @@ public class NewPlayer : MonoBehaviour {
 
 	Collider[] GetCollidersInFront () {
 
-		var layerMask = 1 << 8;
-		layerMask = ~layerMask;
-		Collider[] collidersFound = Physics.OverlapSphere(this.transform.position + this.transform.forward, 0.5f, layerMask);
+		Collider[] collidersFound = Physics.OverlapSphere(this.transform.position + 0.5f * this.transform.forward, 0.5f);
 		//Debug.Log("stationsFound: " + collidersFound.Length);
 		return collidersFound;
 	}

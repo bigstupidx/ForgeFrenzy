@@ -97,7 +97,7 @@ public class PlayerInput : MonoBehaviour {
 				}
 				else if (stationFound.CompareTag ("Anvil")) {
 
-					stationFound.GetComponent<Anvil> ().HammerOre ();
+					stationFound.GetComponent<Anvil> ().Hammer ();
 				}
 				else if (stationFound.CompareTag ("Woodworks")) {
 					

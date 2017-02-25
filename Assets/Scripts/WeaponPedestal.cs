@@ -14,23 +14,23 @@ public class WeaponPedestal : MonoBehaviour {
 		forge = this.GetComponentInParent<Forge> ();
 	}
 
-	void OnTriggerEnter2D(Collider2D other) {
+	void OnTriggerEnter(Collider other) {
 
 		if (other.CompareTag ("Player")) {
 
 			forgingPlayer = other.gameObject;
 			forge.SetForgingPlayer (forgingPlayer, weaponForging);
-			this.GetComponent<SpriteRenderer> ().color = Color.green;
+			this.GetComponentInChildren<SpriteRenderer> ().color = Color.green;
 		}
 	}
 
-	void OnTriggerExit2D(Collider2D other) {
+	void OnTriggerExit(Collider other) {
 
 		if (other.CompareTag ("Player") && other.gameObject == forgingPlayer) {
 
 			forgingPlayer = null;
 			forge.RemoveForgingPlayer ();
-			this.GetComponent<SpriteRenderer> ().color = Color.white;
+			this.GetComponentInChildren<SpriteRenderer> ().color = Color.white;
 		}
 	}
 }

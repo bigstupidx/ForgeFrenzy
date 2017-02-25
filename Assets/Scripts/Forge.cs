@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public enum Weapon { Sword, Axe, Spear, None }
+public enum Weapon { Sword, Axe, Shield, None }
 
 [DisallowMultipleComponent]
 public class Forge : MonoBehaviour {
@@ -17,7 +17,7 @@ public class Forge : MonoBehaviour {
 	[SerializeField] Image forgingBarFill;
 	[SerializeField] GameObject forgedSwordPrefab;
 	[SerializeField] GameObject forgedAxePrefab;
-	[SerializeField] GameObject forgedSpearPrefab;
+	[SerializeField] GameObject forgedShieldPrefab;
 
 	int metalAmount = 0;
 	GameObject forgingPlayer;
@@ -78,12 +78,12 @@ public class Forge : MonoBehaviour {
 				case Weapon.Axe:
 					newWeapon = Instantiate (forgedAxePrefab, Vector3.zero, Quaternion.identity) as GameObject;
 					break;
-				case Weapon.Spear:
-					newWeapon = Instantiate (forgedSpearPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+				case Weapon.Shield:
+					newWeapon = Instantiate (forgedShieldPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 					break;
 				}
 
-				forgingPlayer.GetComponent<PlayerInput> ().ReceiveItem (newWeapon);
+				forgingPlayer.GetComponent<PlayerController> ().ReceiveItem (newWeapon);
 			}
 		}
 	}

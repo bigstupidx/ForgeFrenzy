@@ -25,13 +25,13 @@ public class Anvil : MonoBehaviour {
 
 		placedObject = newObject;
 		placedObject.transform.SetParent (this.transform);
-		placedObject.transform.localPosition = Vector3.zero;
-		placedObject.transform.localRotation = Quaternion.identity;
-		placedObject.GetComponent<Collider2D> ().enabled = true;
+		placedObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f, 0);
+		placedObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
+		placedObject.GetComponent<Collider> ().enabled = true;
 		completionProgress = 0;
 	}
 
-	public void HammerOre () {
+	public void Hammer () {
 
 		if (completionProgress < 1) {
 			
@@ -43,7 +43,7 @@ public class Anvil : MonoBehaviour {
 
 			anvilCanvas.gameObject.SetActive (false);
 			placedObject.GetComponentInChildren<SpriteRenderer> ().color = Color.yellow;
-			Debug.Log ("Ore finished!");
+			Debug.Log ("Hammering finished!");
 		}
 	}
 
