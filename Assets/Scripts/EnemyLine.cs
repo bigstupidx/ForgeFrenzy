@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class EnemyLine : MonoBehaviour {
 
 	[Header("Enemy Line Parameters")]
 	[SerializeField] float startingZ = 33f;
-	[SerializeField] float endZ = -1f;
+	[SerializeField] float losingZ = -1f;
+	[SerializeField] float winningZ = 35f;
 	[SerializeField] float moveSpeed = 1;
 
 	[Header("Enemy Army Composition")]
@@ -26,20 +28,33 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] GameObject brokenMetal;
 	[SerializeField] GameObject brokenLeather;
 
+	Vector3 winPosition;
+	Vector3 losePosition;
 
-	Vector3 endPosition;
 
 	void Awake () {
 
 		this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, startingZ);
-		endPosition = new Vector3(this.transform.position.x, this.transform.position.y, endZ);
+		winPosition = new Vector3(this.transform.position.x, this.transform.position.y, winningZ);
+		losePosition = new Vector3(this.transform.position.x, this.transform.position.y, losingZ);
 		StartCoroutine (SpawnItem ());
 		StartCoroutine(DecreaseAllyStrength());
 	}
 
 	void Update () {
 		
-		this.transform.position = Vector3.MoveTowards(this.transform.position, endPosition, moveSpeed * Time.deltaTime);
+		this.transform.position = Vector3.MoveTowards(this.transform.position, losePosition, moveSpeed * Time.deltaTime);
+
+		if(Vector3.Distance(this.transform.position, winPosition) < 0.1f) {
+
+			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlayersWin();
+			StopAllCoroutines();
+		}
+		else if(Vector3.Distance(this.transform.position, losePosition) < 0.1f) {
+
+			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlayersLose();
+			StopAllCoroutines();
+		}
 	}
 
 	IEnumerator SpawnItem () {
