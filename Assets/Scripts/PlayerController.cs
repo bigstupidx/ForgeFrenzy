@@ -169,6 +169,12 @@ public class PlayerController : MonoBehaviour {
 					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
 					pickedUpObject = null;
 				}
+				else if(collider.CompareTag("Delivery")) {
+
+					stationFound = true;
+					collider.GetComponent<DeliveryStation>().DropOffWeapon(pickedUpObject);
+					pickedUpObject = null;
+				}
 			}
 		}
 
