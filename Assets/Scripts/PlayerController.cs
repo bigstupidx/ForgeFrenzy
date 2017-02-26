@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		// Cancel any station actions if player moves away from it
-		if (stationFound != null && Vector3.Distance (this.transform.position, stationFound.transform.position) > 2.5f) {
+		if (stationFound != null && Vector3.Distance (this.transform.position, stationFound.transform.position) > 3f) {
 
 			if (stationFound.CompareTag ("Forge")) {
 
@@ -54,12 +54,16 @@ public class PlayerController : MonoBehaviour {
 			}
 			else if (stationFound.CompareTag ("Anvil")) {
 
-
+				stationFound.GetComponent<Anvil>().RemovePlayerHammering();
 			}
 			else if (stationFound.CompareTag ("Woodworks")) {
 
 				stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
 				stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
+			}
+			else if(stationFound.CompareTag("Workbench")) {
+				
+				stationFound.GetComponent<Workbench>().RemovePlayerCrafting();
 			}
 
 			stationFound = null;
@@ -102,6 +106,10 @@ public class PlayerController : MonoBehaviour {
 
 					stationFound.GetComponent<Woodworks> ().ChopWood ();
 				}
+				else if(stationFound.CompareTag("Workbench")) {
+
+					stationFound.GetComponent<Workbench>().CraftWeapon();
+				}
 			}
 		}
 		else if (player.GetButtonUp ("Action")) {
@@ -116,6 +124,10 @@ public class PlayerController : MonoBehaviour {
 
 					stationFound.GetComponent<Woodworks> ().ResetWoodCuttingBar ();
 					stationFound.GetComponent<Woodworks> ().RemovePlayerCutting ();
+				}
+				else if(stationFound.CompareTag("Workbench")) {
+
+					stationFound.GetComponent<Workbench>().RemovePlayerCrafting();
 				}
 
 				stationFound = null;
@@ -149,6 +161,12 @@ public class PlayerController : MonoBehaviour {
 
 					stationFound = true;
 					collider.GetComponent<Tannery>().PlaceLeather(pickedUpObject);
+					pickedUpObject = null;
+				}
+				else if(collider.CompareTag("Workbench")) {
+
+					stationFound = true;
+					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
 					pickedUpObject = null;
 				}
 			}
@@ -198,9 +216,14 @@ public class PlayerController : MonoBehaviour {
 
 			foreach (Collider collider in stationsFound) {
 
-				if (collider.CompareTag ("Forge") || collider.CompareTag ("Anvil")) {
+				if (collider.CompareTag ("Forge")) {
 
 					stationFound = collider.gameObject;
+				}
+				else if(collider.CompareTag("Anvil")) {
+
+					stationFound = collider.gameObject;
+					stationFound.GetComponent<Anvil>().SetPlayerHammering(this.gameObject);
 				}
 				else if (collider.CompareTag ("Woodworks")) {
 
@@ -210,6 +233,11 @@ public class PlayerController : MonoBehaviour {
 				else if (collider.CompareTag ("Tannery")) {
 
 					stationFound = collider.gameObject;
+				}
+				else if(collider.CompareTag("Workbench")) {
+
+					stationFound = collider.gameObject;
+					stationFound.GetComponent<Workbench>().SetPlayerCrafting(this.gameObject);
 				}
 			}
 		}
