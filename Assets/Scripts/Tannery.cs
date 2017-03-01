@@ -53,7 +53,7 @@ public class Tannery : MonoBehaviour {
 			leatherTanning = brokenLeather;
 			leatherTanning.transform.SetParent(this.transform);
 			leatherTanning.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f + 0.1f, 0);
-			leatherTanning.transform.localRotation = Quaternion.Euler(90, 0, 0);
+			leatherTanning.transform.localRotation = Quaternion.Euler(0, 0, 0);
 			leatherTanning.GetComponent<Collider>().enabled = false;
 			tanningBar.SetActive (true);
 		}

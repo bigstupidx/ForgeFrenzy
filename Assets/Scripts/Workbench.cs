@@ -15,10 +15,10 @@ public class Workbench : MonoBehaviour {
 	[SerializeField] GameObject finishedSwordPrefab;
 	[SerializeField] GameObject finishedAxePrefab;
 	[SerializeField] GameObject finishedShieldPrefab;
+	[SerializeField] GameObject failedCraft;
 	[SerializeField] GameObject craftFillBar;
 	[SerializeField] Image craftFill;
 
-	GameObject placedObject;
 	List<GameObject> placedGameObjects = new List<GameObject>();
 	List<Materials> placedMaterials = new List<Materials>();
 	float craftingTimer;
@@ -43,9 +43,9 @@ public class Workbench : MonoBehaviour {
 
 		// Orient object on workbench
 		newObject.transform.SetParent (this.transform);
-		newObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f + 0.2f, 0);
+		newObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f, 0);
 		newObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
-		newObject.GetComponent<Collider> ().enabled = true;
+		//newObject.GetComponent<Collider> ().enabled = false;
 
 		// Add to list of objects on workbench
 		placedGameObjects.Add(newObject);
@@ -67,32 +67,44 @@ public class Workbench : MonoBehaviour {
 		}
 	}
 
+	public void RemoveObject (PlayerController player) {
+
+		if (placedGameObjects.Count > 0) {
+
+			player.ReceiveItem (placedGameObjects [placedGameObjects.Count - 1]);
+			placedGameObjects.RemoveAt (placedGameObjects.Count - 1);
+		}
+	}
+
 	public void CraftWeapon () {
 
-		if(craftingTimer == 0) {
+		if (placedGameObjects.Count > 0) {
 
-			craftFillBar.SetActive(true);
-		}
+			if (craftingTimer == 0) {
 
-		if(craftingTimer < maxCraftingTime) {
-
-			craftingTimer += Time.deltaTime;
-			craftFill.fillAmount = (craftingTimer / maxCraftingTime);
-		}
-		else if(craftingTimer >= maxCraftingTime) {
-
-			ResetCraftingBar();
-			GameObject weaponPrefab = DetermineWeaponCreated();
-			GameObject newWeapon = Instantiate(weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-			playerCrafting.GetComponent<PlayerController>().ReceiveItem(newWeapon);
-
-			foreach (GameObject placedObject in placedGameObjects) {
-
-				Destroy(placedObject.gameObject);
+				craftFillBar.SetActive (true);
 			}
 
-			placedGameObjects = new List<GameObject>();
-			placedMaterials = new List<Materials>();
+			if (craftingTimer < maxCraftingTime) {
+
+				craftingTimer += Time.deltaTime;
+				craftFill.fillAmount = (craftingTimer / maxCraftingTime);
+			}
+			else if (craftingTimer >= maxCraftingTime) {
+
+				ResetCraftingBar ();
+				GameObject weaponPrefab = DetermineWeaponCreated ();
+				GameObject newWeapon = Instantiate (weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+				playerCrafting.GetComponent<PlayerController> ().ReceiveItem (newWeapon);
+
+				foreach (GameObject placedObject in placedGameObjects) {
+
+					Destroy (placedObject.gameObject);
+				}
+
+				placedGameObjects = new List<GameObject> ();
+				placedMaterials = new List<Materials> ();
+			}
 		}
 	}
 
@@ -116,12 +128,12 @@ public class Workbench : MonoBehaviour {
 			}
 			else {
 
-				// return doodoo?
+				newWeapon = failedCraft;
 			}
 		}
 		else {
 
-			// return doodoo?
+			newWeapon = failedCraft;
 		}
 
 		return newWeapon;

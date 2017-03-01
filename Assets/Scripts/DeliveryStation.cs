@@ -22,6 +22,17 @@ public class DeliveryStation : MonoBehaviour {
 			enemyLine.IncrementShieldCount();
 		}
 
-		Destroy(dropOff.gameObject);
+		StartCoroutine (DisplayWeapon (dropOff));
+	}
+
+	IEnumerator DisplayWeapon (GameObject weapon) {
+
+		weapon.transform.parent = this.transform;
+		weapon.transform.localPosition = new Vector3 (0, 0.6f, 0);
+		weapon.transform.rotation = Quaternion.Euler (90, 0, 0);
+		weapon.transform.localScale = Vector3.one;
+
+		yield return new WaitForSeconds (2);
+		Destroy (weapon);
 	}
 }

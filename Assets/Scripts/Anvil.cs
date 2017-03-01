@@ -10,8 +10,7 @@ public class Anvil : MonoBehaviour {
 	[Header("References")]
 	[SerializeField] GameObject hammeringBar;
 	[SerializeField] Image hammeringBarFill;
-	[SerializeField] GameObject hammeredAxe;
-	[SerializeField] GameObject hammeredSword;
+	[SerializeField] GameObject hammeredWeapon;
 
 	GameObject playerHammering;
 	GameObject placedObject;
@@ -25,7 +24,10 @@ public class Anvil : MonoBehaviour {
 
 	public void SetPlayerHammering (GameObject player) {
 
-		playerHammering = player;
+		if (placedObject.name.Contains ("Ingot")) {
+			
+			playerHammering = player;
+		}
 	}
 
 	public void RemovePlayerHammering () {
@@ -37,35 +39,37 @@ public class Anvil : MonoBehaviour {
 
 		placedObject = newObject;
 		placedObject.transform.SetParent (this.transform);
-		placedObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f, 0);
+		placedObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f + 0.1f, 0);
 		placedObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
-		placedObject.GetComponent<Collider> ().enabled = true;
+		placedObject.GetComponent<Collider> ().enabled = false;
 		hammeringTimer = 0;
+	}
+
+	public void RemoveObject(PlayerController player) {
+
+		if (placedObject != null) {
+
+			player.ReceiveItem (placedObject);
+			placedObject = null;
+		}
 	}
 
 	public void Hammer () {
 
-		if (hammeringTimer < maxHammeringTime) {
-			
-			hammeringBar.SetActive (true);
-			hammeringTimer += Time.deltaTime;
-			hammeringBarFill.fillAmount = hammeringTimer / maxHammeringTime;
-		}
-		else if(hammeringTimer >= maxHammeringTime) {
-			
-			if(placedObject.name.Contains("Axe Metal")) {
+		if (placedObject != null && placedObject.name.Contains("Ingot")) {
 
-				GameObject newHammeredAxe = Instantiate(hammeredAxe, Vector3.zero, Quaternion.identity) as GameObject;
-				playerHammering.GetComponent<PlayerController>().ReceiveItem(newHammeredAxe);
-				Destroy(placedObject.gameObject);
-				ResetHammeringBar();
+			if (hammeringTimer < maxHammeringTime) {
+			
+				hammeringBar.SetActive (true);
+				hammeringTimer += Time.deltaTime;
+				hammeringBarFill.fillAmount = hammeringTimer / maxHammeringTime;
 			}
-			else if(placedObject.name.Contains("Sword Metal")) {
-
-				GameObject newHammeredSword = Instantiate(hammeredAxe, Vector3.zero, Quaternion.identity) as GameObject;
-				playerHammering.GetComponent<PlayerController>().ReceiveItem(newHammeredSword);
-				Destroy(placedObject.gameObject);
-				ResetHammeringBar();
+			else if (hammeringTimer >= maxHammeringTime) {
+			
+				GameObject newHammeredWeapon = Instantiate (hammeredWeapon, Vector3.zero, Quaternion.identity) as GameObject;
+				playerHammering.GetComponent<PlayerController> ().ReceiveItem (newHammeredWeapon);
+				Destroy (placedObject.gameObject);
+				ResetHammeringBar ();
 			}
 		}
 	}

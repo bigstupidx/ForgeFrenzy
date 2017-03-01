@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
 	[Header("Parameters")]
 	[SerializeField] int inputID;
 	[SerializeField] float moveSpeed = 0.1f;
+	[SerializeField] float boostForce = 300;
 
 	[Header("References")]
 	[SerializeField] Transform carryPosition;
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour {
 	Rigidbody rb;
 	GameObject pickedUpObject;
 	GameObject stationFound;
+	bool isBoosting = false;
 
 
 	void Awake () {
@@ -45,14 +47,18 @@ public class PlayerController : MonoBehaviour {
 			rb.MovePosition(this.transform.position + moveSpeed * new Vector3(horizontalAxis, 0, verticalAxis) * Time.deltaTime);
 		}
 
+		if (player.GetButtonDown ("Boost") && !isBoosting) {
+
+			isBoosting = true;
+			rb.AddForce (boostForce * this.transform.forward);
+			StopCoroutine (BoostCooldown ());
+			StartCoroutine (BoostCooldown ());
+		}
+
 		// Cancel any station actions if player moves away from it
 		if (stationFound != null && Vector3.Distance (this.transform.position, stationFound.transform.position) > 3f) {
 
-			if (stationFound.CompareTag ("Forge")) {
-
-				stationFound.GetComponent<Forge> ().RemoveForgingPlayer ();
-			}
-			else if (stationFound.CompareTag ("Anvil")) {
+			if (stationFound.CompareTag ("Anvil")) {
 
 				stationFound.GetComponent<Anvil>().RemovePlayerHammering();
 			}
@@ -94,12 +100,8 @@ public class PlayerController : MonoBehaviour {
 
 			if (stationFound && pickedUpObject == null) {
 
-				if (stationFound.CompareTag ("Forge")) {
-
-					stationFound.GetComponent<Forge> ().ForgeWeapon ();
-				}
-				else if (stationFound.CompareTag ("Anvil")) {
-
+				if (stationFound.CompareTag ("Anvil")) {
+					
 					stationFound.GetComponent<Anvil> ().Hammer ();
 				}
 				else if (stationFound.CompareTag ("Woodworks")) {
@@ -116,9 +118,9 @@ public class PlayerController : MonoBehaviour {
 
 			if (stationFound) {
 
-				if (stationFound.CompareTag ("Forge")) {
+				if (stationFound.CompareTag ("Anvil")) {
 
-					stationFound.GetComponent<Forge> ().ResetForgingBar ();
+					stationFound.GetComponent<Anvil> ().RemovePlayerHammering ();
 				}
 				else if (stationFound.CompareTag ("Woodworks")) {
 
@@ -147,8 +149,17 @@ public class PlayerController : MonoBehaviour {
 				if (collider.CompareTag ("Forge")) {
 
 					stationFound = true;
-					collider.GetComponent<Forge> ().UpdateMetalAmount (1);
-					Destroy (pickedUpObject.gameObject);
+
+					if (pickedUpObject.name.Contains ("Broken")) {
+						
+						collider.GetComponent<Forge> ().UpdateMetalAmount (1);
+						Destroy (pickedUpObject.gameObject);
+					}
+					else {
+
+						Destroy (pickedUpObject.gameObject);
+					}
+
 					pickedUpObject = null;
 				}
 				else if(collider.CompareTag("Anvil") && collider.GetComponent<Anvil>().GetPlacedObject() == null) {
@@ -190,6 +201,7 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.GetComponent<Collider>().enabled = true;
 		pickedUpObject.GetComponent<Rigidbody>().isKinematic = false;
 		pickedUpObject.transform.rotation = Quaternion.Euler(0, 180, 0);
+		pickedUpObject.transform.localScale = Vector3.one;
 		pickedUpObject = null;
 	}
 
@@ -198,36 +210,48 @@ public class PlayerController : MonoBehaviour {
 		Collider[] collidersFound = GetCollidersInFront ();
 		//Debug.Log ("Pickups Found: " + collidersFound.Length);
 		foreach (Collider collider in collidersFound) {
-			
-			if(collider.transform.CompareTag("Pickup")) {
+			//Debug.Log ("collider found: " + collider.name);	
+			if (collider.transform.CompareTag ("Pickup")) {
 				
 				pickedUpObject = collider.gameObject;
-				pickedUpObject.transform.SetParent(carryPosition);
+				pickedUpObject.transform.SetParent (carryPosition);
 				pickedUpObject.transform.localPosition = Vector3.zero;
 				pickedUpObject.transform.localRotation = Quaternion.identity;
 				pickedUpObject.transform.localScale = Vector3.one;
-				pickedUpObject.GetComponent<Collider>().enabled = false;
-				pickedUpObject.GetComponent<Rigidbody>().isKinematic = true;
-				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon>().enabled = false; }
+				pickedUpObject.GetComponent<Collider> ().enabled = false;
+				pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
+				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
 				break;
+			}
+			else if (collider.transform.CompareTag("Forge")) {
+				
+				collider.GetComponent<Forge> ().RetrieveIngot (this);
+			}
+			else if (collider.transform.CompareTag ("Anvil")) {
+
+				collider.GetComponent<Anvil> ().RemoveObject (this);
+			}
+			else if (collider.transform.CompareTag ("Workbench")) {
+
+				collider.GetComponent<Workbench> ().RemoveObject (this);
 			}
 		}
 	}
 
 	void FindStationToActOn () {
-
+		
 		Collider[] stationsFound = GetCollidersInFront ();
 
 		if(stationsFound.Length > 0) {
 
 			foreach (Collider collider in stationsFound) {
-
+				
 				if (collider.CompareTag ("Forge")) {
 
 					stationFound = collider.gameObject;
 				}
 				else if(collider.CompareTag("Anvil")) {
-
+					
 					stationFound = collider.gameObject;
 					stationFound.GetComponent<Anvil>().SetPlayerHammering(this.gameObject);
 				}
@@ -251,7 +275,8 @@ public class PlayerController : MonoBehaviour {
 
 	Collider[] GetCollidersInFront () {
 
-		Collider[] collidersFound = Physics.OverlapSphere(this.transform.position + 0.5f * this.transform.forward, 0.5f);
+		//Collider[] collidersFound = Physics.OverlapSphere(this.transform.position + 0.5f * this.transform.forward - 0.5f * this.transform.up, 0.5f);
+		Collider[] collidersFound = Physics.OverlapBox(this.transform.position + 0.5f * this.transform.forward, 0.5f * Vector3.one);
 		//Debug.Log("stationsFound: " + collidersFound.Length);
 		return collidersFound;
 	}
@@ -263,5 +288,11 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.transform.localPosition = Vector3.zero;
 		pickedUpObject.transform.localRotation = Quaternion.identity;
 		pickedUpObject.GetComponent<Collider> ().enabled = false;
+	}
+
+	IEnumerator BoostCooldown () {
+
+		yield return new WaitForSeconds (0.5f);
+		isBoosting = false;
 	}
 }

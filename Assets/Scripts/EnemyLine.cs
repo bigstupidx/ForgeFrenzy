@@ -61,7 +61,13 @@ public class EnemyLine : MonoBehaviour {
 
 		Bounds bounds = this.GetComponent<Collider> ().bounds;
 		Vector3 spawnLocation = new Vector3 (Random.Range (bounds.min.x, bounds.max.x), this.transform.position.y, this.transform.position.z - 6);
-		Instantiate (brokenMetal, spawnLocation, Quaternion.identity);
+
+		if (Random.value < 0.75f) {
+			Instantiate (brokenMetal, spawnLocation, Quaternion.identity);
+		}
+		else {
+			Instantiate (brokenLeather, spawnLocation, Quaternion.identity);
+		}
 
 		yield return new WaitForSeconds (spawnCooldown);
 
