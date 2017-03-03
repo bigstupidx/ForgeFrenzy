@@ -22,11 +22,15 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] float allyShieldPercentage = 0.33f;
 
 	[Header("Spawn Parameters")]
-	[SerializeField] float spawnCooldown = 2;
+	[SerializeField] float spawnCooldown = 2f;
+
+	[Header("Trebuchet Parameters")]
+	[SerializeField] float projectileCooldown = 2f;
 
 	[Header("References")]
 	[SerializeField] GameObject brokenMetal;
 	[SerializeField] GameObject brokenLeather;
+	[SerializeField] GameObject trebuchetProjectileController;
 
 	Vector3 winPosition;
 	Vector3 losePosition;
@@ -39,6 +43,7 @@ public class EnemyLine : MonoBehaviour {
 		losePosition = new Vector3(this.transform.position.x, this.transform.position.y, losingZ);
 		StartCoroutine (SpawnItem ());
 		StartCoroutine(DecreaseAllyStrength());
+		StartCoroutine (LaunchProjectile ());
 	}
 
 	void Update () {
@@ -139,5 +144,19 @@ public class EnemyLine : MonoBehaviour {
 
 		yield return new WaitForSeconds(5);
 		StartCoroutine(DecreaseAllyStrength());
+	}
+
+	IEnumerator LaunchProjectile () {
+
+		yield return new WaitForSeconds (projectileCooldown);
+
+		Bounds bounds = this.GetComponent<Collider> ().bounds;
+		float randomX = Random.Range (bounds.min.x, bounds.max.x);
+		float randomZ = Random.Range (losePosition.z, this.transform.position.z);
+		Vector3 spawnPosition = new Vector3(randomX, 0, randomZ);
+
+		Instantiate (trebuchetProjectileController, spawnPosition, Quaternion.identity);
+
+		StartCoroutine (LaunchProjectile ());
 	}
 }

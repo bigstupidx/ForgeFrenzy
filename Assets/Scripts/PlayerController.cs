@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 	GameObject pickedUpObject;
 	GameObject stationFound;
 	bool isBoosting = false;
-
+	bool isStunned = false;
 
 	void Awake () {
 
@@ -30,8 +30,11 @@ public class PlayerController : MonoBehaviour {
 
 	void Update () {
 
-		ProcessMovement();
-		ProcessActions ();
+		if (!isStunned) {
+			
+			ProcessMovement ();
+			ProcessActions ();
+		}
 	}
 
 	void ProcessMovement () {
@@ -294,5 +297,16 @@ public class PlayerController : MonoBehaviour {
 
 		yield return new WaitForSeconds (0.5f);
 		isBoosting = false;
+	}
+
+	public IEnumerator PlayerHit (float stunTime) {
+
+		isStunned = true;
+		this.transform.rotation = Quaternion.Euler (0, 0, 90);
+
+		yield return new WaitForSeconds (stunTime);
+
+		isStunned = false;
+		this.transform.rotation = Quaternion.identity;
 	}
 }
