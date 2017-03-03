@@ -32,8 +32,20 @@ public class PlayerController : MonoBehaviour {
 
 		if (!isStunned) {
 			
-			ProcessMovement ();
 			ProcessActions ();
+
+			if (pickedUpObject == null) {
+
+				TogglePickupUI ();
+			}
+		}
+	}
+
+	void FixedUpdate () {
+
+		if (!isStunned) {
+
+			ProcessMovement ();
 		}
 	}
 
@@ -206,6 +218,8 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.transform.rotation = Quaternion.Euler(0, 180, 0);
 		pickedUpObject.transform.localScale = Vector3.one;
 		pickedUpObject = null;
+
+		if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 	}
 
 	void FindPickup () {
@@ -224,6 +238,7 @@ public class PlayerController : MonoBehaviour {
 				pickedUpObject.GetComponent<Collider> ().enabled = false;
 				pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
 				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
+				if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
 				break;
 			}
 			else if (collider.transform.CompareTag("Forge")) {
@@ -308,5 +323,10 @@ public class PlayerController : MonoBehaviour {
 
 		isStunned = false;
 		this.transform.rotation = Quaternion.identity;
+	}
+
+	void TogglePickupUI () {
+
+		// TODO: Turn on some kind of thought bubble over the player's head if there's a pickup in front of the player
 	}
 }
