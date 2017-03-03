@@ -31,6 +31,7 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] GameObject brokenMetal;
 	[SerializeField] GameObject brokenLeather;
 	[SerializeField] GameObject trebuchetProjectileController;
+	[SerializeField] HUDGears hudGears;
 
 	Vector3 winPosition;
 	Vector3 losePosition;
@@ -142,8 +143,32 @@ public class EnemyLine : MonoBehaviour {
 			allyShieldPercentage -= decreaseAmount;
 		}
 
+		UpdateHUDGears ();
 		yield return new WaitForSeconds(5);
 		StartCoroutine(DecreaseAllyStrength());
+	}
+
+	void UpdateHUDGears () {
+
+		// Determine which part of the army is weakest
+		Weapon weakestPart = Weapon.Shield;
+		float weakestPercentage = Mathf.Min (enemyAxePercentage, enemySwordPercentage, enemyShieldPercentage);
+
+		if (weakestPercentage == enemyAxePercentage) {
+
+			weakestPart = Weapon.Axe;
+		}
+		else if (weakestPercentage == enemySwordPercentage) {
+
+			weakestPart = Weapon.Sword;
+		}
+		else if (weakestPercentage == enemyShieldPercentage) {
+
+			weakestPart = Weapon.Shield;
+		}
+
+		// Change HUD to reflect weakest composition
+		hudGears.TurnToWeapon(weakestPart);
 	}
 
 	IEnumerator LaunchProjectile () {
