@@ -16,7 +16,7 @@ public class TrebuchetProjectile : MonoBehaviour {
 		if (other.CompareTag ("Player")) {
 
 			PlayerController player = other.GetComponent<PlayerController> ();
-			player.StartCoroutine (player.PlayerHit(2));
+			player.StartCoroutine (player.PlayerHit(4));
 		}
 
 		if (other.name == "Ground") {
@@ -30,7 +30,7 @@ public class TrebuchetProjectile : MonoBehaviour {
 		this.GetComponent<MeshRenderer> ().enabled = false;
 		this.GetComponentInParent<TrebuchetProjectileController> ().StopAllCoroutines ();
 		// TODO: Instantiate explosion
-		Camera.main.GetComponent<CameraEffects> ().ShakeCamera (0.5f);
+		Camera.main.GetComponent<CameraEffects> ().ShakeCamera (0.4f);
 		yield return new WaitForSeconds (1);
 		Destroy (this.transform.parent.gameObject);
 	}

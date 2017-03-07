@@ -78,7 +78,7 @@ public class Workbench : MonoBehaviour {
 
 	public void CraftWeapon () {
 
-		if (placedGameObjects.Count > 0) {
+		if (placedGameObjects.Count > 1) {
 
 			if (craftingTimer == 0) {
 

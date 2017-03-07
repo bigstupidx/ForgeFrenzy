@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour {
 		if (player.GetButtonDown ("Boost") && !isBoosting) {
 
 			isBoosting = true;
-			rb.AddForce (boostForce * this.transform.forward);
+			rb.AddForce (boostForce * (carryPosition.position - this.transform.position).normalized);
 			StopCoroutine (BoostCooldown ());
 			StartCoroutine (BoostCooldown ());
 		}
@@ -337,6 +337,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public IEnumerator PlayerHit (float stunTime) {
+
+		if(pickedUpObject) { Destroy(pickedUpObject.gameObject); }
 
 		isStunned = true;
 		this.transform.rotation = Quaternion.Euler (0, 0, 90);

@@ -43,7 +43,7 @@ public class EnemyLine : MonoBehaviour {
 		winPosition = new Vector3(this.transform.position.x, this.transform.position.y, winningZ);
 		losePosition = new Vector3(this.transform.position.x, this.transform.position.y, losingZ);
 		StartCoroutine (SpawnItem ());
-		StartCoroutine(DecreaseAllyStrength());
+		StartCoroutine(DecreaseArmyStrengths());
 		StartCoroutine (LaunchProjectile ());
 	}
 
@@ -124,49 +124,43 @@ public class EnemyLine : MonoBehaviour {
 		UpdateMoveSpeed();
 	}
 
-	IEnumerator DecreaseAllyStrength () {
+	IEnumerator DecreaseArmyStrengths () {
 
-		float decreaseAmount = Random.Range(0.01f, 0.03f);
+		if(allyAxePercentage > enemyShieldPercentage) { enemyShieldPercentage *= Random.Range(0.95f, 1.0f); }
+		if(allySwordPercentage > enemyAxePercentage) { enemyAxePercentage *= Random.Range(0.95f, 1.0f); }
+		if(allyShieldPercentage > enemySwordPercentage) { enemySwordPercentage *= Random.Range(0.95f, 1.0f); }
 
-		float weaponToDecrease = Random.value;
-
-		if(weaponToDecrease < 0.33f && allyAxePercentage >= decreaseAmount) {
-
-			allyAxePercentage -= decreaseAmount;
-		}
-		else if(weaponToDecrease < 0.66f && allySwordPercentage >= decreaseAmount) {
-
-			allySwordPercentage -= decreaseAmount;
-		}
-		else if(allyShieldPercentage >= decreaseAmount) {
-
-			allyShieldPercentage -= decreaseAmount;
-		}
+		if(enemyAxePercentage >= allyShieldPercentage) { allyShieldPercentage *= Random.Range(0.95f, 1.0f); }
+		if(enemySwordPercentage >= allyAxePercentage) { allyAxePercentage *= Random.Range(0.95f, 1.0f); }
+		if(enemyShieldPercentage >= allySwordPercentage) { allySwordPercentage *= Random.Range(0.95f, 1.0f); }
 
 		UpdateHUDGears ();
 		yield return new WaitForSeconds(5);
-		StartCoroutine(DecreaseAllyStrength());
+		StartCoroutine(DecreaseArmyStrengths());
 	}
 
 	void UpdateHUDGears () {
 
 		// Determine which part of the army is weakest
 		Weapon weakestPart = Weapon.Shield;
-		float weakestPercentage = Mathf.Min (enemyAxePercentage, enemySwordPercentage, enemyShieldPercentage);
+		Debug.Log("axe: " + allyAxePercentage);
+		Debug.Log("sword: " + allySwordPercentage);
+		Debug.Log("shield: " + allyShieldPercentage);
+		float weakestPercentage = Mathf.Min (allyAxePercentage, allySwordPercentage, allyShieldPercentage);
 
-		if (weakestPercentage == enemyAxePercentage) {
+		if (weakestPercentage == allyAxePercentage) {
 
 			weakestPart = Weapon.Axe;
 		}
-		else if (weakestPercentage == enemySwordPercentage) {
+		else if (weakestPercentage == allySwordPercentage) {
 
 			weakestPart = Weapon.Sword;
 		}
-		else if (weakestPercentage == enemyShieldPercentage) {
+		else if (weakestPercentage == allyShieldPercentage) {
 
 			weakestPart = Weapon.Shield;
 		}
-
+		Debug.Log("weakest part: " + weakestPart.ToString());
 		// Change HUD to reflect weakest composition
 		hudGears.TurnToWeapon(weakestPart);
 	}

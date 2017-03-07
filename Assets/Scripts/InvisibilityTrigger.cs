@@ -8,13 +8,22 @@ public class InvisibilityTrigger : MonoBehaviour {
 	[SerializeField] Material transparentMaterial;
 
 	MeshRenderer meshRenderer;
-	Material originalMaterial;
+	Material[] originalMaterialsArray;
+	Material[] transparentMateralArray;
 	int playerCount = 0;
 
 	void Awake () {
 
 		meshRenderer = this.GetComponentInParent<MeshRenderer>();
-		originalMaterial = meshRenderer.material;
+
+		originalMaterialsArray = new Material[meshRenderer.materials.Length];
+		transparentMateralArray = new Material[meshRenderer.materials.Length];
+
+		for(int i = 0; i < meshRenderer.materials.Length; i++) {
+
+			originalMaterialsArray[i] = meshRenderer.materials[i];
+			transparentMateralArray[i] = transparentMaterial;
+		}
 	}
 
 	void OnTriggerEnter (Collider other) {
@@ -36,7 +45,14 @@ public class InvisibilityTrigger : MonoBehaviour {
 	}
 
 	void UpdateMaterial () {
+		
+		if(playerCount > 0) {
+			
+			meshRenderer.materials = transparentMateralArray;
+		}
+		else {
 
-		meshRenderer.material = (playerCount > 0) ? transparentMaterial : originalMaterial;
+			meshRenderer.materials = originalMaterialsArray;
+		}
 	}
 }
