@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour {
 
 	[Header("References")]
 	[SerializeField] Transform carryPosition;
+	[SerializeField] SpriteRenderer playerSpriteRenderer;
+	[SerializeField] Sprite playerFrontSprite;
+	[SerializeField] Sprite playerBackSprite;
 
 	Player player;
 	Rigidbody rb;
@@ -56,9 +59,26 @@ public class PlayerController : MonoBehaviour {
 
 		if(horizontalAxis != 0 || verticalAxis != 0) {
 
-			float angleFacing = Mathf.Atan2 (player.GetAxis ("Horizontal"), player.GetAxis ("Vertical")) * Mathf.Rad2Deg;
-			this.transform.rotation = Quaternion.Euler (0, angleFacing, 0);
+			//float angleFacing = Mathf.Atan2 (player.GetAxis ("Horizontal"), player.GetAxis ("Vertical")) * Mathf.Rad2Deg;
+			//this.transform.rotation = Quaternion.Euler (0, angleFacing, 0);
 
+			// Flip sprite horizontally
+			if(horizontalAxis > 0) { playerSpriteRenderer.flipX = true; }
+			else if(horizontalAxis < 0) { playerSpriteRenderer.flipX = false; }
+
+			// Change player sprite for forward and backward movement
+			if(verticalAxis > 0) { 
+				
+				playerSpriteRenderer.sprite = playerBackSprite;
+				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, 0.2f);
+			}
+			else if(verticalAxis < 0) { 
+
+				playerSpriteRenderer.sprite = playerFrontSprite;
+				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, -0.2f);
+			}
+
+			// Move Player
 			rb.MovePosition(this.transform.position + moveSpeed * new Vector3(horizontalAxis, 0, verticalAxis) * Time.deltaTime);
 		}
 
@@ -193,6 +213,7 @@ public class PlayerController : MonoBehaviour {
 
 					stationFound = true;
 					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
+					if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 					pickedUpObject = null;
 				}
 				else if(collider.CompareTag("Delivery")) {
@@ -217,9 +238,9 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.GetComponent<Rigidbody>().isKinematic = false;
 		pickedUpObject.transform.rotation = Quaternion.Euler(0, 180, 0);
 		pickedUpObject.transform.localScale = Vector3.one;
-		pickedUpObject = null;
 
 		if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
+		pickedUpObject = null;
 	}
 
 	void FindPickup () {
@@ -294,7 +315,8 @@ public class PlayerController : MonoBehaviour {
 	Collider[] GetCollidersInFront () {
 
 		//Collider[] collidersFound = Physics.OverlapSphere(this.transform.position + 0.5f * this.transform.forward - 0.5f * this.transform.up, 0.5f);
-		Collider[] collidersFound = Physics.OverlapBox(this.transform.position + 0.5f * this.transform.forward, 0.5f * Vector3.one);
+		//Collider[] collidersFound = Physics.OverlapBox(this.transform.position - 0.5f * this.transform.forward, 0.5f * Vector3.one);
+		Collider[] collidersFound = Physics.OverlapBox(carryPosition.position, 0.5f * Vector3.one);
 		//Debug.Log("stationsFound: " + collidersFound.Length);
 		return collidersFound;
 	}
