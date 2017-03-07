@@ -12,7 +12,7 @@ public class Woodworks : MonoBehaviour {
 	[SerializeField] GameObject woodCuttingBar;
 	[SerializeField] Image woodBarFill;
 	[SerializeField] GameObject choppedWoodPrefab;
-
+	[SerializeField] GameObject xButtonGameobject;
 
 	float woodCuttingTimer = 0;
 	GameObject playerCutting;
@@ -21,6 +21,22 @@ public class Woodworks : MonoBehaviour {
 	void Awake () {
 
 		ResetWoodCuttingBar ();
+	}
+
+	void OnTriggerEnter (Collider other) {
+
+		if (other.CompareTag ("Player")) {
+
+			xButtonGameobject.SetActive (true);
+		}
+	}
+
+	void OnTriggerExit(Collider other) {
+
+		if (other.CompareTag ("Player")) {
+
+			xButtonGameobject.SetActive (false);
+		}
 	}
 
 	public void SetPlayerCutting (GameObject player) {
@@ -38,6 +54,7 @@ public class Woodworks : MonoBehaviour {
 		if (woodCuttingTimer == 0) {
 
 			woodCuttingBar.SetActive (true);
+			xButtonGameobject.SetActive (false);
 			woodBarFill.fillAmount = 0;
 		}
 
