@@ -73,6 +73,7 @@ public class Workbench : MonoBehaviour {
 
 			player.ReceiveItem (placedGameObjects [placedGameObjects.Count - 1]);
 			placedGameObjects.RemoveAt (placedGameObjects.Count - 1);
+			if(placedMaterials.Count > placedGameObjects.Count) { placedMaterials.RemoveAt(placedMaterials.Count - 1); }
 		}
 	}
 

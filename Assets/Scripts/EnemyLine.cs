@@ -143,9 +143,6 @@ public class EnemyLine : MonoBehaviour {
 
 		// Determine which part of the army is weakest
 		Weapon weakestPart = Weapon.Shield;
-		Debug.Log("axe: " + allyAxePercentage);
-		Debug.Log("sword: " + allySwordPercentage);
-		Debug.Log("shield: " + allyShieldPercentage);
 		float weakestPercentage = Mathf.Min (allyAxePercentage, allySwordPercentage, allyShieldPercentage);
 
 		if (weakestPercentage == allyAxePercentage) {
@@ -160,7 +157,7 @@ public class EnemyLine : MonoBehaviour {
 
 			weakestPart = Weapon.Shield;
 		}
-		Debug.Log("weakest part: " + weakestPart.ToString());
+
 		// Change HUD to reflect weakest composition
 		hudGears.TurnToWeapon(weakestPart);
 	}

@@ -32,7 +32,7 @@ public class DeliveryStation : MonoBehaviour {
 		weapon.transform.rotation = Quaternion.Euler (90, 0, 0);
 		weapon.transform.localScale = Vector3.one;
 
-		yield return new WaitForSeconds (2);
+		yield return new WaitForSeconds (1);
 		Destroy (weapon);
 	}
 }

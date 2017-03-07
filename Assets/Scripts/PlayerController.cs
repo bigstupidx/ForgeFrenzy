@@ -248,7 +248,7 @@ public class PlayerController : MonoBehaviour {
 		Collider[] collidersFound = GetCollidersInFront ();
 		//Debug.Log ("Pickups Found: " + collidersFound.Length);
 		foreach (Collider collider in collidersFound) {
-			//Debug.Log ("collider found: " + collider.name);	
+			
 			if (collider.transform.CompareTag ("Pickup")) {
 				
 				pickedUpObject = collider.gameObject;
