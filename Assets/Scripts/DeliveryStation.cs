@@ -6,20 +6,34 @@ using UnityEngine;
 public class DeliveryStation : MonoBehaviour {
 
 	[SerializeField] EnemyLine enemyLine;
+	MeshRenderer meshRenderer;
+
+	void Awake () {
+
+		meshRenderer = this.GetComponent<MeshRenderer>();
+	}
 
 	public void DropOffWeapon (GameObject dropOff) {
 
 		if(dropOff.name.Contains("Finished Axe")) {
 
 			enemyLine.IncrementAxeCount();
+			meshRenderer.material.color = Color.green;
 		}
 		else if(dropOff.name.Contains("Finished Sword")) {
 
 			enemyLine.IncrementSwordCount();
+			meshRenderer.material.color = Color.green;
 		}
 		else if(dropOff.name.Contains("Finished Shield")) {
 
 			enemyLine.IncrementShieldCount();
+			meshRenderer.material.color = Color.green;
+		}
+
+		if(meshRenderer.material.color != Color.green) {
+
+			meshRenderer.material.color = Color.red;
 		}
 
 		StartCoroutine (DisplayWeapon (dropOff));
@@ -33,6 +47,8 @@ public class DeliveryStation : MonoBehaviour {
 		weapon.transform.localScale = Vector3.one;
 
 		yield return new WaitForSeconds (1);
+
+		this.GetComponent<MeshRenderer>().material.color = Color.white;
 		Destroy (weapon);
 	}
 }
