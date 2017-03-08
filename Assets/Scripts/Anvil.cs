@@ -39,7 +39,7 @@ public class Anvil : MonoBehaviour {
 
 		placedObject = newObject;
 		placedObject.transform.SetParent (this.transform);
-		placedObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f + 0.1f, 0);
+		placedObject.transform.localPosition = new Vector3(0.5f, this.transform.GetComponent<Collider>().bounds.max.y / 2f + 0.1f, -0.5f);
 		placedObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
 		placedObject.GetComponent<Collider> ().enabled = false;
 		hammeringTimer = 0;
