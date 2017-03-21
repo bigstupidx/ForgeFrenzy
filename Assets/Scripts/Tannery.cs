@@ -16,6 +16,7 @@ public class Tannery : MonoBehaviour {
 	[SerializeField] GameObject tanningBar;
 	[SerializeField] Image tanningBarFill;
 	[SerializeField] GameObject tannedLeatherPrefab;
+	[SerializeField] GameObject aButtonGameobject;
 
 	// Privates
 	GameObject leatherTanning;
@@ -25,6 +26,25 @@ public class Tannery : MonoBehaviour {
 	void Awake () {
 
 		ResetTanning ();
+	}
+
+	void OnTriggerEnter(Collider other) {
+
+		if(other.CompareTag("Player") && other.GetComponent<PlayerController>().HasObject()) {
+
+			if(other.GetComponent<PlayerController>().GetPickedUpObject().name.Contains("Broken Leather")) {
+
+				aButtonGameobject.SetActive(true);
+			}
+		}
+	}
+
+	void OnTriggerExit(Collider other) {
+
+		if(other.CompareTag("Player")) {
+
+			aButtonGameobject.SetActive(false);
+		}
 	}
 
 	void Update () {
@@ -56,6 +76,7 @@ public class Tannery : MonoBehaviour {
 			leatherTanning.transform.localRotation = Quaternion.identity;
 			leatherTanning.GetComponent<Collider>().enabled = false;
 			tanningBar.SetActive (true);
+			aButtonGameobject.SetActive(false);
 		}
 	}
 
@@ -64,5 +85,6 @@ public class Tannery : MonoBehaviour {
 		tanningTimer = 0;
 		tanningBarFill.fillAmount = 0;
 		tanningBar.SetActive (false);
+		aButtonGameobject.SetActive(false);
 	}
 }

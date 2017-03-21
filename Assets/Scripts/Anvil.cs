@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
+[DisallowMultipleComponent]
 public class Anvil : MonoBehaviour {
 
 	[Header("Parameters")]
@@ -11,6 +12,8 @@ public class Anvil : MonoBehaviour {
 	[SerializeField] GameObject hammeringBar;
 	[SerializeField] Image hammeringBarFill;
 	[SerializeField] GameObject hammeredWeapon;
+	[SerializeField] GameObject aButtonGameobject;
+	[SerializeField] GameObject xButtonGameobject;
 
 	GameObject playerHammering;
 	GameObject placedObject;
@@ -22,9 +25,36 @@ public class Anvil : MonoBehaviour {
 		ResetHammeringBar();
 	}
 
+	void OnTriggerEnter(Collider other) {
+
+		if(other.CompareTag("Player")) {
+
+			if(!placedObject) {
+
+				if(other.GetComponent<PlayerController>().HasObject()) {
+
+					aButtonGameobject.SetActive(true);
+				}
+			}
+			else if(placedObject.name.Contains("Ingot")) {
+				
+				xButtonGameobject.SetActive(true);
+			}
+		}
+	}
+
+	void OnTriggerExit(Collider other) {
+
+		if(other.CompareTag("Player")) {
+
+			xButtonGameobject.SetActive(false);
+			aButtonGameobject.SetActive(false);
+		}
+	}
+
 	public void SetPlayerHammering (GameObject player) {
 
-		if (placedObject.name.Contains ("Ingot")) {
+		if (placedObject && placedObject.name.Contains ("Ingot")) {
 			
 			playerHammering = player;
 		}
@@ -43,6 +73,8 @@ public class Anvil : MonoBehaviour {
 		placedObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
 		placedObject.GetComponent<Collider> ().enabled = false;
 		hammeringTimer = 0;
+		aButtonGameobject.SetActive(false);
+		xButtonGameobject.SetActive(true);
 	}
 
 	public void RemoveObject(PlayerController player) {
@@ -57,6 +89,13 @@ public class Anvil : MonoBehaviour {
 	public void Hammer () {
 
 		if (placedObject != null && placedObject.name.Contains("Ingot")) {
+
+			if(hammeringTimer == 0) {
+
+				xButtonGameobject.SetActive(false);
+				hammeringBar.SetActive(true);
+				hammeringBarFill.fillAmount = 0;
+			}
 
 			if (hammeringTimer < maxHammeringTime) {
 			
@@ -84,5 +123,7 @@ public class Anvil : MonoBehaviour {
 		hammeringTimer = 0;
 		hammeringBarFill.fillAmount = 0;
 		hammeringBar.SetActive(false);
+		aButtonGameobject.SetActive(false);
+		xButtonGameobject.SetActive(false);
 	}
 }

@@ -31,7 +31,6 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] GameObject brokenMetal;
 	[SerializeField] GameObject brokenLeather;
 	[SerializeField] GameObject trebuchetProjectileController;
-	[SerializeField] HUDGears hudGears;
 
 	Vector3 winPosition;
 	Vector3 losePosition;
@@ -68,7 +67,7 @@ public class EnemyLine : MonoBehaviour {
 		Bounds bounds = this.GetComponent<Collider> ().bounds;
 		Vector3 spawnLocation = new Vector3 (Random.Range (bounds.min.x, bounds.max.x), this.transform.position.y, this.transform.position.z - 6);
 
-		if (Random.value < 0.75f) {
+		if (Random.value < 0.5f) {
 			Instantiate (brokenMetal, spawnLocation, Quaternion.identity);
 		}
 		else {
@@ -157,9 +156,6 @@ public class EnemyLine : MonoBehaviour {
 
 			weakestPart = Weapon.Shield;
 		}
-
-		// Change HUD to reflect weakest composition
-		hudGears.TurnToWeapon(weakestPart);
 	}
 
 	IEnumerator LaunchProjectile () {

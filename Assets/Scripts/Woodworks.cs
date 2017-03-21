@@ -76,5 +76,6 @@ public class Woodworks : MonoBehaviour {
 		woodCuttingTimer = 0;
 		woodBarFill.fillAmount = 0;
 		woodCuttingBar.SetActive (false);
+		xButtonGameobject.SetActive(false);
 	}
 }

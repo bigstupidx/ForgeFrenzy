@@ -6,6 +6,8 @@ public class BrokenWeapon : MonoBehaviour {
 
 	[SerializeField] float startFade = 5;
 	[SerializeField] float fadeSpeed = 1;
+	[SerializeField] Sprite brokenSword;
+	[SerializeField] Sprite brokenAxe;
 
 	SpriteRenderer spriteRenderer;
 	bool fading = false;
@@ -13,6 +15,7 @@ public class BrokenWeapon : MonoBehaviour {
 	void Awake () {
 
 		spriteRenderer = this.GetComponent<SpriteRenderer> ();
+		spriteRenderer.sprite = (Random.value < 0.5) ? brokenSword : brokenAxe;
 	}
 
 	void OnEnable () {

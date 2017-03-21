@@ -85,7 +85,8 @@ public class PlayerController : MonoBehaviour {
 		if (player.GetButtonDown ("Boost") && !isBoosting) {
 
 			isBoosting = true;
-			rb.AddForce (boostForce * (carryPosition.position - this.transform.position).normalized);
+			Vector3 boostDirection = new Vector3(horizontalAxis, 0, verticalAxis);
+			rb.AddForce (boostForce * boostDirection.normalized);
 			StopCoroutine (BoostCooldown ());
 			StartCoroutine (BoostCooldown ());
 		}
@@ -187,7 +188,7 @@ public class PlayerController : MonoBehaviour {
 
 					if (pickedUpObject.name.Contains ("Broken")) {
 						
-						collider.GetComponent<Forge> ().UpdateMetalAmount (1);
+						collider.GetComponent<Forge> ().UpdateMeltingAmount ();
 						Destroy (pickedUpObject.gameObject);
 					}
 					else {
@@ -196,18 +197,21 @@ public class PlayerController : MonoBehaviour {
 					}
 
 					pickedUpObject = null;
+					break;
 				}
 				else if(collider.CompareTag("Anvil") && collider.GetComponent<Anvil>().GetPlacedObject() == null) {
 
 					stationFound = true;
 					collider.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
 					pickedUpObject = null;
+					break;
 				}
 				else if(collider.CompareTag("Tannery") && pickedUpObject.name.Contains("Broken Leather")) {
 
 					stationFound = true;
 					collider.GetComponent<Tannery>().PlaceLeather(pickedUpObject);
 					pickedUpObject = null;
+					break;
 				}
 				else if(collider.CompareTag("Workbench")) {
 
@@ -215,12 +219,14 @@ public class PlayerController : MonoBehaviour {
 					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
 					if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 					pickedUpObject = null;
+					break;
 				}
 				else if(collider.CompareTag("Delivery")) {
 
 					stationFound = true;
 					collider.GetComponent<DeliveryStation>().DropOffWeapon(pickedUpObject);
 					pickedUpObject = null;
+					break;
 				}
 			}
 		}
@@ -332,7 +338,7 @@ public class PlayerController : MonoBehaviour {
 
 	IEnumerator BoostCooldown () {
 
-		yield return new WaitForSeconds (0.5f);
+		yield return new WaitForSeconds (0.4f);
 		isBoosting = false;
 	}
 
@@ -347,6 +353,16 @@ public class PlayerController : MonoBehaviour {
 
 		isStunned = false;
 		this.transform.rotation = Quaternion.identity;
+	}
+
+	public bool HasObject () {
+
+		return (pickedUpObject ? true : false);
+	}
+
+	public GameObject GetPickedUpObject () {
+
+		return pickedUpObject;
 	}
 
 	void TogglePickupUI () {
