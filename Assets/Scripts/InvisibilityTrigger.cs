@@ -10,7 +10,7 @@ public class InvisibilityTrigger : MonoBehaviour {
 	MeshRenderer meshRenderer;
 	Material[] originalMaterialsArray;
 	Material[] transparentMateralArray;
-	int playerCount = 0;
+	int objectCount = 0;
 
 	void Awake () {
 
@@ -28,25 +28,25 @@ public class InvisibilityTrigger : MonoBehaviour {
 
 	void OnTriggerEnter (Collider other) {
 
-		if(other.CompareTag("Player")) {
+		if(other.CompareTag("Player") || other.CompareTag("Pickup")) {
 
-			playerCount++;
+			objectCount++;
 			UpdateMaterial();
 		}
 	}
 
 	void OnTriggerExit (Collider other) {
 		
-		if (other.CompareTag ("Player")) {
+		if (other.CompareTag ("Player") || other.CompareTag("Pickup")) {
 
-			playerCount--;
+			objectCount--;
 			UpdateMaterial();
 		}
 	}
 
 	void UpdateMaterial () {
 		
-		if(playerCount > 0) {
+		if(objectCount > 0) {
 			
 			meshRenderer.materials = transparentMateralArray;
 		}

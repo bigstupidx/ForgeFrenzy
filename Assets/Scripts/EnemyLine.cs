@@ -67,7 +67,7 @@ public class EnemyLine : MonoBehaviour {
 		Bounds bounds = this.GetComponent<Collider> ().bounds;
 		Vector3 spawnLocation = new Vector3 (Random.Range (bounds.min.x, bounds.max.x), this.transform.position.y, this.transform.position.z - 6);
 
-		if (Random.value < 0.5f) {
+		if (Random.value < 0.7f) {
 			Instantiate (brokenMetal, spawnLocation, Quaternion.identity);
 		}
 		else {
@@ -167,7 +167,17 @@ public class EnemyLine : MonoBehaviour {
 		float randomZ = Random.Range (losePosition.z, this.transform.position.z);
 		Vector3 spawnPosition = new Vector3(randomX, 0, randomZ);
 
-		Instantiate (trebuchetProjectileController, spawnPosition, Quaternion.identity);
+		GameObject newTrebuchetProjectile = Instantiate (trebuchetProjectileController, spawnPosition, Quaternion.identity) as GameObject;
+
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		for(int i = 0; i < players.Length; i++) {
+
+			if(players[i].transform.position.z > losePosition.z) {
+
+				newTrebuchetProjectile.GetComponent<TrebuchetProjectileController>().SetTarget(players[i]);
+				break;
+			}
+		}
 
 		StartCoroutine (LaunchProjectile ());
 	}
