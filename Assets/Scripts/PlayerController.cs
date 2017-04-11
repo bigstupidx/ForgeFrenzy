@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Rewired;
 
 [DisallowMultipleComponent]
@@ -11,6 +12,13 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] int inputID;
 	[SerializeField] float moveSpeed = 0.1f;
 	[SerializeField] float boostForce = 300;
+
+	[Header("Station UI")]
+	[SerializeField] Image stationGuideImage;
+	[SerializeField] Sprite forgeIcon;
+	[SerializeField] Sprite anvilIcon;
+	[SerializeField] Sprite workbenchIcon;
+	[SerializeField] Sprite tanRackIcon;
 
 	[Header("References")]
 	[SerializeField] Transform carryPosition;
@@ -29,6 +37,12 @@ public class PlayerController : MonoBehaviour {
 
 		player = ReInput.players.GetPlayer(inputID);
 		rb = this.GetComponent<Rigidbody>();
+
+		if(stationGuideImage == null) {
+
+			stationGuideImage = this.GetComponentInChildren<Image>();
+		}
+		stationGuideImage.enabled = false;
 	}
 
 	void Update () {
@@ -36,11 +50,6 @@ public class PlayerController : MonoBehaviour {
 		if (!isStunned) {
 			
 			ProcessActions ();
-
-			if (pickedUpObject == null) {
-
-				TogglePickupUI ();
-			}
 		}
 	}
 
@@ -214,11 +223,12 @@ public class PlayerController : MonoBehaviour {
 					break;
 				}
 				else if(collider.CompareTag("Workbench")) {
-
+					//Debug.Log("Dropping off item at workbench");
 					stationFound = true;
 					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
 					if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 					pickedUpObject = null;
+					//Debug.Log("Dropped off item");
 					break;
 				}
 				else if(collider.CompareTag("Delivery")) {
@@ -234,6 +244,11 @@ public class PlayerController : MonoBehaviour {
 		if(!stationFound || stationsFound.Length == 0) {
 
 			DropItem();
+		}
+
+		if(pickedUpObject == null) {
+
+			stationGuideImage.enabled = false;
 		}
 	}
 
@@ -264,8 +279,11 @@ public class PlayerController : MonoBehaviour {
 				pickedUpObject.transform.localScale = Vector3.one;
 				pickedUpObject.GetComponent<Collider> ().enabled = false;
 				pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
+
 				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
-				if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
+				else if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
+				UpdateStationGuideIcon();
+
 				break;
 			}
 			else if (collider.transform.CompareTag("Forge")) {
@@ -281,6 +299,8 @@ public class PlayerController : MonoBehaviour {
 				collider.GetComponent<Workbench> ().RemoveObject (this);
 			}
 		}
+
+		UpdateStationGuideIcon();
 	}
 
 	void FindStationToActOn () {
@@ -336,6 +356,25 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.GetComponent<Collider> ().enabled = false;
 	}
 
+	void UpdateStationGuideIcon () {
+
+		if(pickedUpObject) {
+
+			stationGuideImage.enabled = true;
+
+			if(pickedUpObject.GetComponent<BrokenWeapon>()) { stationGuideImage.sprite = forgeIcon; }
+			else if(pickedUpObject.name.Contains("Forged Ingot")) { stationGuideImage.sprite = anvilIcon; }
+			else if(pickedUpObject.name.Contains("Axe Metal")) { stationGuideImage.sprite = workbenchIcon; }
+			else if(pickedUpObject.name.Contains("Sword Metal")) { stationGuideImage.sprite = workbenchIcon; }
+			else if(pickedUpObject.name.Contains("Broken Leather")) { stationGuideImage.sprite = tanRackIcon; }
+			else if(pickedUpObject.name.Contains("Tanned Leather")) { stationGuideImage.sprite = workbenchIcon; }
+		}
+		else {
+
+			stationGuideImage.enabled = false;
+		}
+	}
+
 	IEnumerator BoostCooldown () {
 
 		yield return new WaitForSeconds (0.4f);
@@ -365,8 +404,23 @@ public class PlayerController : MonoBehaviour {
 		return pickedUpObject;
 	}
 
-	void TogglePickupUI () {
+	public void SlowMoveSpeed () {
 
-		// TODO: Turn on some kind of thought bubble over the player's head if there's a pickup in front of the player
+		moveSpeed = 0.05f;
+	}
+
+	public void ResetMoveSpeed () {
+
+		moveSpeed = 0.1f;
+	}
+
+	public float GetMoveSpeed () {
+
+		return moveSpeed;
+	}
+
+	public void SetMoveSpeed(float newMoveSpeed) {
+
+		moveSpeed = newMoveSpeed;
 	}
 }

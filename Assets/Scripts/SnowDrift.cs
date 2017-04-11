@@ -19,4 +19,20 @@ public class SnowDrift : MonoBehaviour {
     public void SetDir(int newDir) {
         dir = newDir;
     }
+
+	void OnTriggerEnter2D(Collider2D other) {
+
+		if(other.CompareTag("Player")) {
+
+			other.GetComponent<PlayerController>().SlowMoveSpeed();
+		}
+	}
+
+	void OnTriggerExit2D(Collider2D other) {
+
+		if(other.CompareTag("Player")) {
+
+			other.GetComponent<PlayerController>().ResetMoveSpeed();
+		}
+	}
 }

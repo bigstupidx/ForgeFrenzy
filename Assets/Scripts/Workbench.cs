@@ -40,10 +40,10 @@ public class Workbench : MonoBehaviour {
 	}
 
 	public void AddObject (GameObject newObject) {
-
+		//Debug.Log("Added " + newObject.name + " to workbench");
 		// Orient object on workbench
 		newObject.transform.SetParent (this.transform);
-		newObject.transform.localPosition = new Vector3(0, this.transform.GetComponent<Collider>().bounds.max.y / 2f, 0);
+		newObject.transform.localPosition = new Vector3(-0.2f, 0.6f, 0.2f);
 		newObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
 		//newObject.GetComponent<Collider> ().enabled = false;
 
