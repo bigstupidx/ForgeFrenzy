@@ -1,0 +1,163 @@
+fileFormatVersion: 2
+guid: 4e79a41cf94bffc43b585e06c5bbf978
+timeCreated: 1491933774
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Box001
+    100002: Box002
+    100004: Box003
+    100006: CornerPipe1
+    100008: CornerPipe2
+    100010: Cylinder001
+    100012: Cylinder002
+    100014: //RootNode
+    100016: Tube001
+    100018: Tube002
+    100020: Tube003
+    100022: Tube004
+    100024: Tube005
+    100026: Tube006
+    100028: Tube007
+    100030: Tube008
+    100032: Tube009
+    100034: Tube010
+    100036: tubePipe1
+    100038: tubePipe2
+    100040: UPipe1
+    400000: Box001
+    400002: Box002
+    400004: Box003
+    400006: CornerPipe1
+    400008: CornerPipe2
+    400010: Cylinder001
+    400012: Cylinder002
+    400014: //RootNode
+    400016: Tube001
+    400018: Tube002
+    400020: Tube003
+    400022: Tube004
+    400024: Tube005
+    400026: Tube006
+    400028: Tube007
+    400030: Tube008
+    400032: Tube009
+    400034: Tube010
+    400036: tubePipe1
+    400038: tubePipe2
+    400040: UPipe1
+    2300000: Box001
+    2300002: Box002
+    2300004: Box003
+    2300006: Cylinder001
+    2300008: Cylinder002
+    2300010: Tube001
+    2300012: Tube002
+    2300014: Tube003
+    2300016: Tube004
+    2300018: Tube005
+    2300020: Tube006
+    2300022: Tube007
+    2300024: Tube008
+    2300026: Tube009
+    2300028: Tube010
+    3300000: Box001
+    3300002: Box002
+    3300004: Box003
+    3300006: Cylinder001
+    3300008: Cylinder002
+    3300010: Tube001
+    3300012: Tube002
+    3300014: Tube003
+    3300016: Tube004
+    3300018: Tube005
+    3300020: Tube006
+    3300022: Tube007
+    3300024: Tube008
+    3300026: Tube009
+    3300028: Tube010
+    4300000: Box001
+    4300002: Cylinder001
+    4300004: Cylinder002
+    4300006: Tube002
+    4300008: Tube004
+    4300010: Tube005
+    4300012: Tube001
+    4300014: Tube003
+    4300016: Tube006
+    4300018: Box003
+    4300020: Tube008
+    4300022: Tube009
+    4300024: Box002
+    4300026: Tube007
+    4300028: Tube010
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
