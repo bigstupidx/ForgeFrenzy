@@ -69,6 +69,11 @@ public class Woodworks : MonoBehaviour {
 			GameObject choppedWood = Instantiate (choppedWoodPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 			playerCutting.GetComponent<PlayerController> ().ReceiveItem (choppedWood);
 		}
+
+		if(this.GetComponent<AudioSource>().isPlaying == false) {
+
+			this.GetComponent<AudioSource>().Play();
+		}
 	}
 
 	public void ResetWoodCuttingBar () {

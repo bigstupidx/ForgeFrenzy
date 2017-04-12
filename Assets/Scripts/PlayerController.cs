@@ -354,6 +354,7 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.transform.localPosition = Vector3.zero;
 		pickedUpObject.transform.localRotation = Quaternion.identity;
 		pickedUpObject.GetComponent<Collider> ().enabled = false;
+		UpdateStationGuideIcon();
 	}
 
 	void UpdateStationGuideIcon () {
@@ -368,6 +369,7 @@ public class PlayerController : MonoBehaviour {
 			else if(pickedUpObject.name.Contains("Sword Metal")) { stationGuideImage.sprite = workbenchIcon; }
 			else if(pickedUpObject.name.Contains("Broken Leather")) { stationGuideImage.sprite = tanRackIcon; }
 			else if(pickedUpObject.name.Contains("Tanned Leather")) { stationGuideImage.sprite = workbenchIcon; }
+			else if(pickedUpObject.name.Contains("Wood")) { stationGuideImage.sprite = workbenchIcon; }
 		}
 		else {
 

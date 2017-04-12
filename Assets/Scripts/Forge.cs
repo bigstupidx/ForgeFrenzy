@@ -19,7 +19,7 @@ public class Forge : MonoBehaviour {
 	int meltingAmount = 0;
 	int metalAmount = 0;
 	Weapon weaponForging;
-
+	AudioSource audioSource;
 
 	void Awake () {
 
@@ -27,6 +27,7 @@ public class Forge : MonoBehaviour {
 		metalBarFill.fillAmount = 0;
 		meltingBarFill.transform.parent.gameObject.SetActive(false);
 		aButtonGameobject.SetActive(false);
+		audioSource = this.GetComponent<AudioSource>();
 	}
 
 	void Update () {
@@ -75,6 +76,7 @@ public class Forge : MonoBehaviour {
 		meltingAmount++;
 		meltingBarFill.fillAmount += 0.5f;
 		meltingBarFill.transform.parent.gameObject.SetActive(true);
+		if(audioSource.isPlaying == false) { audioSource.Play(); }
 	}
 
 	public void RetrieveIngot (PlayerController player) {
@@ -86,6 +88,10 @@ public class Forge : MonoBehaviour {
 			metalAmount--;
 			metalBarFill.fillAmount = ((float)metalAmount / maxMetalAmount);
 			aButtonGameobject.SetActive(false);
+		}
+		else {
+
+			audioSource.Stop();
 		}
 	}
 }
