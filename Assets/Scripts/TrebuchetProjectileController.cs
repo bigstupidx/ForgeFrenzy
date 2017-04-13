@@ -5,6 +5,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class TrebuchetProjectileController : MonoBehaviour {
 
+	[SerializeField] float minZ;
+
 	SpriteRenderer targetSpriteRenderer;
 	GameObject trebuchetProjectile;
 	GameObject playerTargeting;
@@ -26,6 +28,11 @@ public class TrebuchetProjectileController : MonoBehaviour {
 		if(playerTargeting && Time.time < (instantiationTime + trackingTime)) {
 
 			this.transform.position = new Vector3(playerTargeting.transform.position.x, this.transform.position.y, playerTargeting.transform.position.z);
+
+			float playerX = playerTargeting.transform.position.x;
+			float objectY = this.transform.position.y;
+			float clampedZ = Mathf.Clamp(this.transform.position.z, minZ, this.transform.position.z);
+			this.transform.position = new Vector3(playerX, objectY, clampedZ);
 		}
 	}
 
