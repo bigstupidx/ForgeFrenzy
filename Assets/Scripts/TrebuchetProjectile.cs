@@ -8,6 +8,7 @@ public class TrebuchetProjectile : MonoBehaviour {
 	
     [SerializeField] GameObject explosion;
 
+
 	void OnTriggerEnter (Collider other) {
 
 		if (other.CompareTag ("Pickup")) {
@@ -31,8 +32,7 @@ public class TrebuchetProjectile : MonoBehaviour {
 
 		this.GetComponent<MeshRenderer> ().enabled = false;
 		this.GetComponentInParent<TrebuchetProjectileController> ().StopAllCoroutines ();
-        // TODO: Instantiate explosion
-        GameObject newExplosion = Instantiate(explosion, this.transform.position, Quaternion.Euler(new Vector3(-90, 0, 0))) as GameObject;
+		GameObject newExplosion = Instantiate(explosion, new Vector3(this.transform.position.x, 0.8f, this.transform.position.z), Quaternion.Euler(new Vector3(-90, 0, 0))) as GameObject;
 		Camera.main.GetComponent<CameraEffects> ().ShakeCamera (0.4f);
 		yield return new WaitForSeconds (1);
         Destroy(newExplosion, 2);

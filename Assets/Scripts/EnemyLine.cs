@@ -9,6 +9,7 @@ public class EnemyLine : MonoBehaviour {
 	[SerializeField] float startingZ = 33f;
 	[SerializeField] float losingZ = -1f;
 	[SerializeField] float winningZ = 35f;
+	[SerializeField] float warningZ = 10f;
 	[SerializeField] float moveSpeed = 1;
 
 	[Header("Enemy Army Composition")]
@@ -49,6 +50,22 @@ public class EnemyLine : MonoBehaviour {
 	void Update () {
 		
 		this.transform.position = Vector3.MoveTowards(this.transform.position, losePosition, moveSpeed * Time.deltaTime);
+
+		if(this.transform.position.z <= warningZ) {
+
+			AudioSource[] audioSources = this.GetComponentsInChildren<AudioSource>();
+
+			foreach (AudioSource audioSource in audioSources) {
+
+				audioSource.pitch = 1.1f;
+				audioSource.spatialBlend = 0.5f;
+			}
+		}
+
+		CheckEndGameConditions();
+	}
+
+	void CheckEndGameConditions () {
 
 		if(Vector3.Distance(this.transform.position, winPosition) < 0.1f) {
 
@@ -159,26 +176,36 @@ public class EnemyLine : MonoBehaviour {
 	}
 
 	IEnumerator LaunchProjectile () {
+		
+		while(true) {
+			
+			Bounds bounds = this.GetComponent<Collider> ().bounds;
+			float randomX = Random.Range (bounds.min.x, bounds.max.x);
+			float randomZ = Random.Range (losePosition.z, this.transform.position.z);
+			Vector3 spawnPosition = new Vector3(randomX, 0, randomZ);
 
-		yield return new WaitForSeconds (projectileCooldown);
+			GameObject newTrebuchetProjectile = Instantiate (trebuchetProjectileController, spawnPosition, Quaternion.identity) as GameObject;
 
-		Bounds bounds = this.GetComponent<Collider> ().bounds;
-		float randomX = Random.Range (bounds.min.x, bounds.max.x);
-		float randomZ = Random.Range (losePosition.z, this.transform.position.z);
-		Vector3 spawnPosition = new Vector3(randomX, 0, randomZ);
+			// Get player to target
+			GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+			List<GameObject> playersOutside = new List<GameObject>();
+			for(int i = 0; i < players.Length; i++) {
 
-		GameObject newTrebuchetProjectile = Instantiate (trebuchetProjectileController, spawnPosition, Quaternion.identity) as GameObject;
+				if(players[i].transform.position.z > losePosition.z) {
 
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-		for(int i = 0; i < players.Length; i++) {
-
-			if(players[i].transform.position.z > losePosition.z) {
-
-				newTrebuchetProjectile.GetComponent<TrebuchetProjectileController>().SetTarget(players[i]);
-				break;
+					playersOutside.Add(players[i]);
+				}
 			}
-		}
 
-		StartCoroutine (LaunchProjectile ());
+			players = playersOutside.ToArray();
+
+			if(players.Length > 0) {
+				
+				GameObject playerToTarget = players[Random.Range(0, players.Length)];
+				newTrebuchetProjectile.GetComponent<TrebuchetProjectileController>().SetTarget(playerToTarget);
+			}
+
+			yield return new WaitForSeconds (projectileCooldown);
+		}
 	}
 }

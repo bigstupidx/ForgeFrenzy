@@ -268,39 +268,67 @@ public class PlayerController : MonoBehaviour {
 
 		Collider[] collidersFound = GetCollidersInFront ();
 		//Debug.Log ("Pickups Found: " + collidersFound.Length);
+
+		// Add all relevant colliders to a list
+		List<Collider> collidersFoundList = new List<Collider>();
 		foreach (Collider collider in collidersFound) {
-			
-			if (collider.transform.CompareTag ("Pickup")) {
-				
-				pickedUpObject = collider.gameObject;
-				pickedUpObject.transform.SetParent (carryPosition);
-				pickedUpObject.transform.localPosition = Vector3.zero;
-				pickedUpObject.transform.localRotation = Quaternion.identity;
-				pickedUpObject.transform.localScale = Vector3.one;
-				pickedUpObject.GetComponent<Collider> ().enabled = false;
-				pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
 
-				if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
-				else if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
-				UpdateStationGuideIcon();
+			if(collider.transform.CompareTag("Pickup") || collider.transform.CompareTag("Forge") ||
+				collider.transform.CompareTag("Anvil") || collider.transform.CompareTag("Workbench")) {
 
-				break;
-			}
-			else if (collider.transform.CompareTag("Forge")) {
-				
-				collider.GetComponent<Forge> ().RetrieveIngot (this);
-			}
-			else if (collider.transform.CompareTag ("Anvil")) {
-
-				collider.GetComponent<Anvil> ().RemoveObject (this);
-			}
-			else if (collider.transform.CompareTag ("Workbench")) {
-
-				collider.GetComponent<Workbench> ().RemoveObject (this);
+				collidersFoundList.Add(collider);
 			}
 		}
 
-		UpdateStationGuideIcon();
+		// Find collider closest to the player
+		if(collidersFound.Length > 0) {
+			
+			collidersFound = collidersFoundList.ToArray();
+			GameObject closestObject = null;
+			float closestDistance = 1000f;
+			for(int i = 0; i < collidersFound.Length; i++) {
+
+				float objectDistance = Vector3.Distance(collidersFound[i].transform.position, this.transform.position);
+
+				if(objectDistance < closestDistance) {
+
+					closestObject = collidersFound[i].gameObject;
+					closestDistance = objectDistance;
+				}
+			}
+
+			// Act on closest object depending on where it was found
+			if(closestObject != null) {
+				
+				if (closestObject.transform.CompareTag ("Pickup")) {
+					
+					pickedUpObject = closestObject;
+					pickedUpObject.transform.SetParent (carryPosition);
+					pickedUpObject.transform.localPosition = Vector3.zero;
+					pickedUpObject.transform.localRotation = Quaternion.identity;
+					pickedUpObject.transform.localScale = Vector3.one;
+					pickedUpObject.GetComponent<Collider> ().enabled = false;
+					pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
+
+					if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
+					else if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
+				}
+				else if (closestObject.transform.CompareTag("Forge")) {
+					
+					closestObject.GetComponent<Forge> ().RetrieveIngot (this);
+				}
+				else if (closestObject.transform.CompareTag ("Anvil")) {
+
+					closestObject.GetComponent<Anvil> ().RemoveObject (this);
+				}
+				else if (closestObject.transform.CompareTag ("Workbench")) {
+
+					closestObject.GetComponent<Workbench> ().RemoveObject (this);
+				}
+
+				UpdateStationGuideIcon();
+			}
+		}
 	}
 
 	void FindStationToActOn () {
