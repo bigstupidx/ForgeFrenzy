@@ -110,6 +110,11 @@ public class Anvil : MonoBehaviour {
 				Destroy (placedObject.gameObject);
 				ResetHammeringBar ();
 			}
+
+			if(this.GetComponent<AudioSource>().isPlaying == false) {
+
+				this.GetComponent<AudioSource>().Play();
+			}
 		}
 	}
 
