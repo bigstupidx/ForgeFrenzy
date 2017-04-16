@@ -5,7 +5,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class EnemyLine : MonoBehaviour {
 
-	[Header("Enemy Line Parameters")]
+    GameObject gameController;
+    LevelOneController levelOneController;
+    bool isLevelOne = false;
+
+    [Header("Enemy Line Parameters")]
 	[SerializeField] float startingZ = 33f;
 	[SerializeField] float losingZ = -1f;
 	[SerializeField] float winningZ = 35f;
@@ -46,6 +50,18 @@ public class EnemyLine : MonoBehaviour {
 		StartCoroutine(DecreaseArmyStrengths());
 		StartCoroutine (LaunchProjectile ());
 	}
+
+    void Start() {
+        gameController = GameObject.FindGameObjectWithTag("GameController");
+        if (gameController.GetComponent<LevelOneController>() != null) {
+            isLevelOne = true;
+            levelOneController = gameController.GetComponent<LevelOneController>();
+            Debug.Log("Level One");
+        } else {
+            isLevelOne = false;
+            Debug.Log("Not Level One");
+        }
+    }
 
 	void Update () {
 		
@@ -126,19 +142,28 @@ public class EnemyLine : MonoBehaviour {
 
 		allyAxePercentage += 0.05f;
 		UpdateMoveSpeed();
+        if (isLevelOne) {
+            levelOneController.IncreaseAxeCount();
+        }
 	}
 
 	public void IncrementSwordCount () {
 
 		allySwordPercentage += 0.05f;
 		UpdateMoveSpeed();
-	}
+        if (isLevelOne) {
+            levelOneController.IncreaseSwordCount();
+        }
+    }
 
 	public void IncrementShieldCount () {
 
 		allyShieldPercentage += 0.05f;
 		UpdateMoveSpeed();
-	}
+        if (isLevelOne) {
+            levelOneController.IncreaseShieldCount();
+        }
+    }
 
 	IEnumerator DecreaseArmyStrengths () {
 
@@ -208,4 +233,13 @@ public class EnemyLine : MonoBehaviour {
 			yield return new WaitForSeconds (projectileCooldown);
 		}
 	}
+
+    public void StopMovement() {
+        moveSpeed = 0;
+    }
+
+
+    public void RestartMovement() {
+        moveSpeed = 1;
+    }
 }
