@@ -27,10 +27,14 @@ public class LevelOneController : MonoBehaviour {
         uiController.ShowShieldInstructions();
         uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
 		for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
+		uiController.gameObject.SetActive(false);
+		ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[0]);
     }
 	
 	// Update is called once per frame
 	void Update () {
+
+		UpdateDialogue();
         CheckArmyPosition();
 
         // put in temp input controlls here -- call all at the same time to make sure it works
@@ -40,6 +44,22 @@ public class LevelOneController : MonoBehaviour {
             enemyLine.GetComponent<EnemyLine>().IncrementShieldCount();
             enemyLine.GetComponent<EnemyLine>().IncrementSwordCount();
         }
+	}
+
+	void UpdateDialogue () {
+
+		if(ConversationManager.Instance._IsTalking()) {
+
+			if(Input.anyKeyDown) {
+
+				ConversationManager.Instance.stepSpeed = 0f;
+			}
+
+			if(Input.anyKeyDown && ConversationManager.Instance._GetStepCoroutine() == false) {
+
+				ConversationManager.Instance._SetNextLine(true);
+			}
+		}
 	}
 
     void CheckArmyPosition() {
@@ -104,6 +124,11 @@ public class LevelOneController : MonoBehaviour {
                 //currentState++;
                 Debug.Log("Tutorial Complete");
                 uiController.TutorialComplete();
+				enemyLine.GetComponent<EnemyLine>().StopAllCoroutines();
+				ParticleSystem[] enemyLineFightClouds = enemyLine.GetComponentsInChildren<ParticleSystem>();
+				foreach (ParticleSystem fightCloud in enemyLineFightClouds) { fightCloud.Stop(); }
+				AudioSource[] enemyLineAudio = enemyLine.GetComponentsInChildren<AudioSource> ();
+				foreach (AudioSource audioSource in enemyLineAudio) { audioSource.Stop(); }
             }
         }
     }
