@@ -23,8 +23,9 @@ public class PlayerController : MonoBehaviour {
 	[Header("References")]
 	[SerializeField] Transform carryPosition;
 	[SerializeField] SpriteRenderer playerSpriteRenderer;
-	[SerializeField] Sprite playerFrontSprite;
-	[SerializeField] Sprite playerBackSprite;
+	//[SerializeField] Sprite playerFrontSprite;
+	//[SerializeField] Sprite playerBackSprite;
+	[SerializeField] Animator playerAnim;
 
 	Player player;
 	Rigidbody rb;
@@ -44,6 +45,10 @@ public class PlayerController : MonoBehaviour {
 			stationGuideImage = this.GetComponentInChildren<Image>();
 		}
 		stationGuideImage.enabled = false;
+
+		playerAnim.SetBool ("Move", false);
+		playerAnim.SetBool ("Facing", true);
+
 	}
 
 	void Update () {
@@ -67,31 +72,47 @@ public class PlayerController : MonoBehaviour {
 		float horizontalAxis = player.GetAxis("Horizontal");
 		float verticalAxis = player.GetAxis("Vertical");
 
-		if(horizontalAxis != 0 || verticalAxis != 0) {
+		if (horizontalAxis != 0 || verticalAxis != 0) {
 
 			//float angleFacing = Mathf.Atan2 (player.GetAxis ("Horizontal"), player.GetAxis ("Vertical")) * Mathf.Rad2Deg;
 			//this.transform.rotation = Quaternion.Euler (0, angleFacing, 0);
 
+			playerAnim.SetBool ("Move", true);
+
 			// Flip sprite horizontally
-			if(horizontalAxis > 0) { playerSpriteRenderer.flipX = true; }
-			else if(horizontalAxis < 0) { playerSpriteRenderer.flipX = false; }
+			if (horizontalAxis > 0) {
+				playerSpriteRenderer.flipX = true;
+			} else if (horizontalAxis < 0) {
+				playerSpriteRenderer.flipX = false;
+			}
 
 			// Change player sprite for forward and backward movement
-			if(verticalAxis > 0) { 
+			if (verticalAxis > 0) { 
 				
-				playerSpriteRenderer.sprite = playerBackSprite;
+				//playerSpriteRenderer.sprite = playerBackSprite;
+				playerAnim.SetBool ("Facing", false);
+				playerAnim.SetBool ("Move", true);
 				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, 0.2f);
-				if(pickedUpObject) { pickedUpObject.GetComponent<SpriteRenderer>().sortingOrder = -1; }
-			}
-			else if(verticalAxis < 0) { 
+				if (pickedUpObject) {
+					pickedUpObject.GetComponent<SpriteRenderer> ().sortingOrder = -1;
+				}
+			} else if (verticalAxis < 0) { 
 
-				playerSpriteRenderer.sprite = playerFrontSprite;
+				//playerSpriteRenderer.sprite = playerFrontSprite;
+				playerAnim.SetBool ("Facing", true);
+				playerAnim.SetBool ("Move", true);
 				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, -0.2f);
-				if(pickedUpObject) { pickedUpObject.GetComponent<SpriteRenderer>().sortingOrder = 1; }
+				if (pickedUpObject) {
+					pickedUpObject.GetComponent<SpriteRenderer> ().sortingOrder = 1;
+				}
 			}
 
 			// Move Player
-			rb.MovePosition(this.transform.position + moveSpeed * new Vector3(horizontalAxis, 0, verticalAxis) * Time.deltaTime);
+			rb.MovePosition (this.transform.position + moveSpeed * new Vector3 (horizontalAxis, 0, verticalAxis) * Time.deltaTime);
+		} else {
+
+			playerAnim.SetBool("Move", false);
+
 		}
 
 		if (player.GetButtonDown ("Boost") && !isBoosting) {
