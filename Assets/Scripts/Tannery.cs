@@ -62,6 +62,7 @@ public class Tannery : MonoBehaviour {
 				newLeather.transform.localRotation = leatherTanning.transform.localRotation;
 				Destroy(leatherTanning.gameObject);
 				ResetTanning();
+				aButtonGameobject.SetActive(true);
 			}
 		}
 	}

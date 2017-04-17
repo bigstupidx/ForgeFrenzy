@@ -26,6 +26,7 @@ public class LevelOneController : MonoBehaviour {
         currentState = TutorialState.SHIELD;
         uiController.ShowShieldInstructions();
         uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
+		for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
     }
 	
 	// Update is called once per frame
@@ -44,13 +45,13 @@ public class LevelOneController : MonoBehaviour {
     void CheckArmyPosition() {
         // Stop the enemy line before it advances too far
         if (currentState == TutorialState.SHIELD && enemyLine.transform.position.z <= farLine.transform.position.z) {
-            Debug.Log("Stopping Enemy Line");
+            //Debug.Log("Stopping Enemy Line");
             enemyLine.GetComponent<EnemyLine>().StopMovement();
         } else if (currentState == TutorialState.SWORD && enemyLine.transform.position.z <= midLine.transform.position.z) {
-            Debug.Log("Stopping Enemy Line");
+            //Debug.Log("Stopping Enemy Line");
             enemyLine.GetComponent<EnemyLine>().StopMovement();
         } else if (currentState == TutorialState.AXE && enemyLine.transform.position.z <= closeLine.transform.position.z) {
-            Debug.Log("Stopping Enemy Line");
+            //Debug.Log("Stopping Enemy Line");
             enemyLine.GetComponent<EnemyLine>().StopMovement();
         }
     }
@@ -59,12 +60,15 @@ public class LevelOneController : MonoBehaviour {
         if (currentState == TutorialState.SHIELD)
         {
             shieldCount++;
+			if(shieldCount == 1) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
+
             // check task completion here
             if (shieldCount == requiredItemCount)
             {
                 currentState++;
                 uiController.ShowSwordInstructions();
                 uiController.ShowInstructions("Quick! Make 3 Swords for your army!");
+				for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Sword, 1000); }
                 enemyLine.GetComponent<EnemyLine>().RestartMovement();
             }
         }
@@ -74,12 +78,15 @@ public class LevelOneController : MonoBehaviour {
         if (currentState == TutorialState.SWORD)
         {
             swordCount++;
+			if(swordCount == 1) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Sword, 1000); }
+
             // check task completion here
             if (swordCount == requiredItemCount)
             {
                 currentState++;
                 uiController.ShowAxeInstructions();
                 uiController.ShowInstructions("Quick! Make 3 Axes for your army!");
+				for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Axe, 1000); }
                 enemyLine.GetComponent<EnemyLine>().RestartMovement();
             }
         }
@@ -89,6 +96,8 @@ public class LevelOneController : MonoBehaviour {
         if (currentState == TutorialState.AXE)
         {
             axeCount++;
+			if(axeCount == 1) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Axe, 1000); }
+
             // check task completion here
             if (axeCount == requiredItemCount)
             {

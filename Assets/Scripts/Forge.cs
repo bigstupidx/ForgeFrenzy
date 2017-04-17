@@ -26,7 +26,6 @@ public class Forge : MonoBehaviour {
 
 		meltingBarFill.fillAmount = 0;
 		metalBarFill.fillAmount = 0;
-		meltingBarFill.transform.parent.gameObject.SetActive(false);
 		aButtonGameobject.SetActive(false);
 		smokeParticleEffect.SetActive(false);
 		audioSource = this.GetComponent<AudioSource>();
@@ -46,7 +45,6 @@ public class Forge : MonoBehaviour {
 				
 				meltingAmount--;
 				metalAmount++;
-				meltingBarFill.transform.parent.gameObject.SetActive(false);
 				metalBarFill.fillAmount = ((float) metalAmount / maxMetalAmount);
 				smokeParticleEffect.SetActive(false);
 			}
@@ -81,7 +79,7 @@ public class Forge : MonoBehaviour {
 		meltingAmount++;
 		meltingBarFill.fillAmount += 0.5f;
 		meltingBarFill.transform.parent.gameObject.SetActive(true);
-		//if(audioSource.isPlaying == false) { audioSource.Play(); }
+		if(audioSource.isPlaying == false) { audioSource.Play(); }
 	}
 
 	public void RetrieveIngot (PlayerController player) {
@@ -96,7 +94,7 @@ public class Forge : MonoBehaviour {
 		}
 		else {
 
-			//audioSource.Stop();
+			audioSource.Stop();
 		}
 	}
 }

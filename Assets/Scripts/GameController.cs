@@ -12,8 +12,8 @@ public class GameController : MonoBehaviour {
 
 	void Awake () {
 
-		if(gameOverText == null) { gameOverText = GameObject.Find("Game Over Text").GetComponent<Text>(); }
-		gameOverText.gameObject.SetActive(false);
+		//if(gameOverText == null) { gameOverText = GameObject.Find("Game Over Text").GetComponent<Text>(); }
+		//gameOverText.gameObject.SetActive(false);
 		gameRunning = true;
 	}
 

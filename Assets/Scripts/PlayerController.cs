@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour {
 	bool isBoosting = false;
 	bool isStunned = false;
 
+
 	void Awake () {
 
 		player = ReInput.players.GetPlayer(inputID);
@@ -80,11 +81,13 @@ public class PlayerController : MonoBehaviour {
 				
 				playerSpriteRenderer.sprite = playerBackSprite;
 				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, 0.2f);
+				if(pickedUpObject) { pickedUpObject.GetComponent<SpriteRenderer>().sortingOrder = -1; }
 			}
 			else if(verticalAxis < 0) { 
 
 				playerSpriteRenderer.sprite = playerFrontSprite;
 				carryPosition.transform.localPosition = new Vector3 (0, -0.1f, -0.2f);
+				if(pickedUpObject) { pickedUpObject.GetComponent<SpriteRenderer>().sortingOrder = 1; }
 			}
 
 			// Move Player
@@ -184,66 +187,80 @@ public class PlayerController : MonoBehaviour {
 
 	void FindStationToPlace () {
 
-		Collider[] stationsFound = GetCollidersInFront ();
-		bool stationFound = false;
+		Collider[] collidersFound = GetCollidersInFront ();
 
-		if(stationsFound.Length > 0) {
+		// Filter colliders to only stations
+		List<GameObject> stationsFoundList = new List<GameObject>();
 
-			foreach (Collider collider in stationsFound) {
-				
-				if (collider.CompareTag ("Forge")) {
+		for(int i = 0; i < collidersFound.Length; i++) {
 
-					stationFound = true;
+			if(collidersFound[i].transform.CompareTag("Pickup") || collidersFound[i].transform.CompareTag("Forge") ||
+				collidersFound[i].transform.CompareTag("Anvil") || collidersFound[i].transform.CompareTag("Workbench") ||
+				collidersFound[i].transform.CompareTag("Tannery") || collidersFound[i].transform.CompareTag("Dropoff")) {
 
-					if (pickedUpObject.name.Contains ("Broken")) {
-						
-						collider.GetComponent<Forge> ().UpdateMeltingAmount ();
-						Destroy (pickedUpObject.gameObject);
-					}
-					else {
-
-						Destroy (pickedUpObject.gameObject);
-					}
-
-					pickedUpObject = null;
-					break;
-				}
-				else if(collider.CompareTag("Anvil") && collider.GetComponent<Anvil>().GetPlacedObject() == null) {
-
-					stationFound = true;
-					collider.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
-					pickedUpObject = null;
-					break;
-				}
-				else if(collider.CompareTag("Tannery") && pickedUpObject.name.Contains("Broken Leather")) {
-
-					stationFound = true;
-					collider.GetComponent<Tannery>().PlaceLeather(pickedUpObject);
-					pickedUpObject = null;
-					break;
-				}
-				else if(collider.CompareTag("Workbench")) {
-					//Debug.Log("Dropping off item at workbench");
-					stationFound = true;
-					collider.GetComponent<Workbench>().AddObject(pickedUpObject);
-					if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
-					pickedUpObject = null;
-					//Debug.Log("Dropped off item");
-					break;
-				}
-				else if(collider.CompareTag("Delivery")) {
-
-					stationFound = true;
-					collider.GetComponent<DeliveryStation>().DropOffWeapon(pickedUpObject);
-					pickedUpObject = null;
-					break;
-				}
+				stationsFoundList.Add(collidersFound[i].gameObject);
 			}
 		}
 
-		if(!stationFound || stationsFound.Length == 0) {
+		if(stationsFoundList.Count == 0) {
 
 			DropItem();
+		}
+		else {
+			
+			// Find station closest to player
+			float closestDistance = 1000;
+			GameObject closestStation = null;
+			GameObject[] stationsFound = stationsFoundList.ToArray();
+
+			for(int i = 0; i < stationsFound.Length; i++) {
+
+				float stationDistance = Vector3.Distance(this.transform.position - 0.5f * Vector3.forward, stationsFound[i].transform.position);
+
+				if(stationDistance < closestDistance) {
+
+					closestDistance = stationDistance;
+					closestStation = stationsFound[i];
+				}
+			}
+
+			// Act on station depending on what it is
+			if (closestStation.CompareTag ("Forge")) {
+
+				if (pickedUpObject.name.Contains ("Broken")) {
+					
+					closestStation.GetComponent<Forge> ().UpdateMeltingAmount ();
+					Destroy (pickedUpObject.gameObject);
+				}
+				else {
+
+					Destroy (pickedUpObject.gameObject);
+				}
+
+				pickedUpObject = null;
+			}
+			else if(closestStation.CompareTag("Anvil") && closestStation.GetComponent<Anvil>().GetPlacedObject() == null) {
+
+				closestStation.GetComponent<Anvil> ().PlaceObject (pickedUpObject);
+				pickedUpObject = null;
+			}
+			else if(closestStation.CompareTag("Tannery") && pickedUpObject.name.Contains("Broken Leather")) {
+
+				closestStation.GetComponent<Tannery>().PlaceLeather(pickedUpObject);
+				pickedUpObject = null;
+			}
+			else if(closestStation.CompareTag("Workbench")) {
+				//Debug.Log("Dropping off item at workbench");
+				closestStation.GetComponent<Workbench>().AddObject(pickedUpObject);
+				if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
+				pickedUpObject = null;
+				//Debug.Log("Dropped off item");
+			}
+			else if(closestStation.CompareTag("Dropoff")) {
+				
+				closestStation.GetComponent<WeaponDropoff>().DropOffWeapon(pickedUpObject);
+				pickedUpObject = null;
+			}
 		}
 
 		if(pickedUpObject == null) {
@@ -288,7 +305,7 @@ public class PlayerController : MonoBehaviour {
 			float closestDistance = 1000f;
 			for(int i = 0; i < collidersFound.Length; i++) {
 
-				float objectDistance = Vector3.Distance(collidersFound[i].transform.position, this.transform.position);
+				float objectDistance = Vector3.Distance(collidersFound[i].transform.position, this.transform.position - 0.5f * Vector3.forward);
 
 				if(objectDistance < closestDistance) {
 
@@ -333,33 +350,66 @@ public class PlayerController : MonoBehaviour {
 
 	void FindStationToActOn () {
 		
-		Collider[] stationsFound = GetCollidersInFront ();
+		Collider[] collidersFound = GetCollidersInFront ();
+		//Debug.Log("colliders found: " + collidersFound.Length);
+		if(collidersFound.Length > 0) {
+			
+			// Filter array to only stations
+			List<GameObject> stationsFoundList = new List<GameObject>();
 
-		if(stationsFound.Length > 0) {
+			for(int i = 0; i < collidersFound.Length; i++) {
 
-			foreach (Collider collider in stationsFound) {
-				
-				if (collider.CompareTag ("Forge")) {
+				string foundTag = collidersFound[i].tag;
 
-					stationFound = collider.gameObject;
+				if(foundTag == "Forge" || foundTag == "Anvil" || foundTag == "Woodworks" ||
+					foundTag == "Tannery" || foundTag == "Workbench") {
+					//Debug.Log("Added station to list");
+					stationsFoundList.Add(collidersFound[i].gameObject);
 				}
-				else if(collider.CompareTag("Anvil")) {
-					
-					stationFound = collider.gameObject;
+			}
+
+			GameObject[] stationsFound = stationsFoundList.ToArray();
+			//Debug.Log("stations found: " + stationsFound.Length);
+			// Find station closest to player
+			float closestDistance = 1000f;
+			GameObject closestStation = null;
+
+			for(int i = 0; i < stationsFound.Length; i++) {
+
+				float stationDistance = Vector3.Distance(this.transform.position - 0.5f * Vector3.forward, stationsFound[i].transform.position);
+
+				if(stationDistance < closestDistance) {
+
+					closestDistance = stationDistance;
+					closestStation = stationsFound[i].gameObject;
+				}
+			}
+			//Debug.Log("closest station: " + closestStation);
+
+			// Act on closest station depending on what it is
+			if(closestStation != null) {
+				
+				if (closestStation.CompareTag ("Forge")) {
+
+					stationFound = closestStation;
+				}
+				else if(closestStation.CompareTag("Anvil")) {
+
+					stationFound = closestStation;
 					stationFound.GetComponent<Anvil>().SetPlayerHammering(this.gameObject);
 				}
-				else if (collider.CompareTag ("Woodworks")) {
+				else if (closestStation.CompareTag ("Woodworks")) {
 
-					stationFound = collider.gameObject;
+					stationFound = closestStation;
 					stationFound.GetComponent<Woodworks> ().SetPlayerCutting (this.gameObject);
 				}
-				else if (collider.CompareTag ("Tannery")) {
+				else if (closestStation.CompareTag ("Tannery")) {
 
-					stationFound = collider.gameObject;
+					stationFound = closestStation;
 				}
-				else if(collider.CompareTag("Workbench")) {
+				else if(closestStation.CompareTag("Workbench")) {
 
-					stationFound = collider.gameObject;
+					stationFound = closestStation;
 					stationFound.GetComponent<Workbench>().SetPlayerCrafting(this.gameObject);
 				}
 			}
@@ -398,6 +448,7 @@ public class PlayerController : MonoBehaviour {
 			else if(pickedUpObject.name.Contains("Broken Leather")) { stationGuideImage.sprite = tanRackIcon; }
 			else if(pickedUpObject.name.Contains("Tanned Leather")) { stationGuideImage.sprite = workbenchIcon; }
 			else if(pickedUpObject.name.Contains("Wood")) { stationGuideImage.sprite = workbenchIcon; }
+			else if(pickedUpObject.name.Contains("Finished")) { stationGuideImage.enabled = false; }
 		}
 		else {
 

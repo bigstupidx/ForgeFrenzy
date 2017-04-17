@@ -1,13 +1,13 @@
 fileFormatVersion: 2
 guid: bab589c957033e2449e979ef60098129
-timeCreated: 1492375091
+timeCreated: 1492385966
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: ui_Buttons_1
-    21300002: ui_Buttons_3
-    21300004: ui_Buttons_5
-    21300006: ui_Buttons_7
+    21300000: Y_Button
+    21300002: X_Button
+    21300004: B_Button
+    21300006: A_Button
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -74,20 +74,20 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ui_Buttons_1
+      name: Y_Button
       rect:
         serializedVersion: 2
         x: 406
         y: 813.3334
-        width: 406.66666
-        height: 406.66666
+        width: 406.66663
+        height: 406.66663
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: ui_Buttons_3
+      name: X_Button
       rect:
         serializedVersion: 2
         x: 0
@@ -95,33 +95,33 @@ TextureImporter:
         width: 406.66666
         height: 406.66666
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.50000006}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: ui_Buttons_5
+      name: B_Button
       rect:
         serializedVersion: 2
         x: 812
         y: 407.33334
-        width: 406.66666
+        width: 406.66663
         height: 406.66666
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.50000006}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: ui_Buttons_7
+      name: A_Button
       rect:
         serializedVersion: 2
         x: 406
         y: 1.3333435
-        width: 406.66666
+        width: 406.66663
         height: 406.66666
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0

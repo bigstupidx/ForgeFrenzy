@@ -8,17 +8,22 @@ public enum Materials { AxeMetal, SwordMetal, Wood, Leather }
 [DisallowMultipleComponent]
 public class Workbench : MonoBehaviour {
 
-	[Header("Parameters")]
+	[Header("Crafting")]
 	[SerializeField] float maxCraftingTime = 5;
+	[SerializeField] GameObject craftFillBar;
+	[SerializeField] Image craftFill;
+	[SerializeField] AudioClip craftingAudioClip;
+	[SerializeField] AudioClip craftSuccessAudioClip;
+	[SerializeField] AudioClip craftFailAudioClip;
 
 	[Header("References")]
 	[SerializeField] GameObject finishedSwordPrefab;
 	[SerializeField] GameObject finishedAxePrefab;
 	[SerializeField] GameObject finishedShieldPrefab;
 	[SerializeField] GameObject failedCraft;
-	[SerializeField] GameObject craftFillBar;
-	[SerializeField] Image craftFill;
+	[SerializeField] AudioClip placeAudioClip;
 
+	AudioSource audioSource;
 	List<GameObject> placedGameObjects = new List<GameObject>();
 	List<Materials> placedMaterials = new List<Materials>();
 	float craftingTimer;
@@ -26,6 +31,7 @@ public class Workbench : MonoBehaviour {
 
 	void Awake () {
 
+		audioSource = this.GetComponent<AudioSource>();
 		ResetCraftingBar();
 	}
 
@@ -43,8 +49,8 @@ public class Workbench : MonoBehaviour {
 		//Debug.Log("Added " + newObject.name + " to workbench");
 		// Orient object on workbench
 		newObject.transform.SetParent (this.transform);
-		newObject.transform.localPosition = new Vector3(-0.2f, 0.6f, 0.2f);
-		newObject.transform.localRotation = Quaternion.Euler(90, 0, 90);
+		newObject.transform.localPosition = new Vector3(0.1f, 0.6f, 0);
+		newObject.transform.localRotation = Quaternion.Euler(76, -90, 0);
 		//newObject.GetComponent<Collider> ().enabled = false;
 
 		// Add to list of objects on workbench
@@ -65,6 +71,9 @@ public class Workbench : MonoBehaviour {
 
 			placedMaterials.Add(Materials.Leather);
 		}
+
+		audioSource.clip = placeAudioClip;
+		audioSource.Play();
 	}
 
 	public void RemoveObject (PlayerController player) {
@@ -90,6 +99,7 @@ public class Workbench : MonoBehaviour {
 
 				craftingTimer += Time.deltaTime;
 				craftFill.fillAmount = (craftingTimer / maxCraftingTime);
+				if(audioSource.isPlaying == false) { audioSource.PlayOneShot(craftingAudioClip); }
 			}
 			else if (craftingTimer >= maxCraftingTime) {
 
@@ -118,23 +128,28 @@ public class Workbench : MonoBehaviour {
 			if(placedMaterials.Contains(Materials.AxeMetal) && placedMaterials.Contains(Materials.Wood)) {
 				
 				newWeapon = finishedAxePrefab;
+				audioSource.PlayOneShot(craftSuccessAudioClip);
 			}
 			else if(placedMaterials.Contains(Materials.SwordMetal) && placedMaterials.Contains(Materials.Leather)) {
 				
 				newWeapon = finishedSwordPrefab;
+				audioSource.PlayOneShot(craftSuccessAudioClip);
 			}
 			else if(placedMaterials.Contains(Materials.Leather) && placedMaterials.Contains(Materials.Wood)) {
 				
 				newWeapon = finishedShieldPrefab;
+				audioSource.PlayOneShot(craftSuccessAudioClip);
 			}
 			else {
 
 				newWeapon = failedCraft;
+				audioSource.PlayOneShot(craftFailAudioClip);
 			}
 		}
 		else {
 
 			newWeapon = failedCraft;
+			audioSource.PlayOneShot(craftFailAudioClip);
 		}
 
 		return newWeapon;
