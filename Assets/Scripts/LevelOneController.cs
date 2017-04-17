@@ -23,11 +23,7 @@ public class LevelOneController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        currentState = TutorialState.SHIELD;
-        uiController.ShowShieldInstructions();
-        uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
-		for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
-		uiController.gameObject.SetActive(false);
+        
 		ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[0]);
     }
 	
@@ -59,6 +55,16 @@ public class LevelOneController : MonoBehaviour {
 
 				ConversationManager.Instance._SetNextLine(true);
 			}
+		}
+
+		// Check if intro convo is finished
+		if(ConversationManager.Instance._IsTalking() == false && uiController.gameObject.activeSelf == false) {
+			Debug.Log("Convo finished");
+			currentState = TutorialState.SHIELD;
+			uiController.gameObject.SetActive(true);
+			uiController.ShowShieldInstructions();
+			uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
+			for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
 		}
 	}
 
