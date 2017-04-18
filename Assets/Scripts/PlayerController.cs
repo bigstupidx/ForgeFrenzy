@@ -169,6 +169,8 @@ public class PlayerController : MonoBehaviour {
 
 			if (stationFound && pickedUpObject == null) {
 
+				playerAnim.SetBool("Work", true);
+
 				if (stationFound.CompareTag ("Anvil")) {
 					
 					stationFound.GetComponent<Anvil> ().Hammer ();
@@ -186,6 +188,8 @@ public class PlayerController : MonoBehaviour {
 		else if (player.GetButtonUp ("Action")) {
 
 			if (stationFound) {
+
+				playerAnim.SetBool("Work", false);
 
 				if (stationFound.CompareTag ("Anvil")) {
 
@@ -245,6 +249,8 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 
+			playerAnim.SetBool ("Carry", false);
+
 			// Act on station depending on what it is
 			if (closestStation.CompareTag ("Forge")) {
 
@@ -297,6 +303,7 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.GetComponent<Rigidbody>().isKinematic = false;
 		pickedUpObject.transform.rotation = Quaternion.Euler(0, 180, 0);
 		pickedUpObject.transform.localScale = Vector3.one;
+		playerAnim.SetBool ("Carry", false);
 
 		if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 		pickedUpObject = null;
@@ -347,6 +354,7 @@ public class PlayerController : MonoBehaviour {
 					pickedUpObject.transform.localScale = Vector3.one;
 					pickedUpObject.GetComponent<Collider> ().enabled = false;
 					pickedUpObject.GetComponent<Rigidbody> ().isKinematic = true;
+					playerAnim.SetBool ("Carry", true);
 
 					if (pickedUpObject.GetComponent<BrokenWeapon> ()) { pickedUpObject.GetComponent<BrokenWeapon> ().enabled = false; }
 					else if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().ShowPickedUpUI (); }
@@ -454,6 +462,8 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.transform.localRotation = Quaternion.identity;
 		pickedUpObject.GetComponent<Collider> ().enabled = false;
 		UpdateStationGuideIcon();
+
+		playerAnim.SetBool ("Carry", true);
 	}
 
 	void UpdateStationGuideIcon () {
