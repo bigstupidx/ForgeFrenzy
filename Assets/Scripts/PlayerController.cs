@@ -169,19 +169,20 @@ public class PlayerController : MonoBehaviour {
 		else if (player.GetButton ("Action")) {
 
 			if (stationFound && pickedUpObject == null) {
-
-				playerAnim.SetBool("Work", true);
-
+				
 				if (stationFound.CompareTag ("Anvil")) {
-					
+
+					playerAnim.SetBool("Work", true);
 					stationFound.GetComponent<Anvil> ().Hammer ();
 				}
 				else if (stationFound.CompareTag ("Woodworks")) {
 
+					playerAnim.SetBool("Work", true);
 					stationFound.GetComponent<Woodworks> ().ChopWood ();
 				}
-				else if(stationFound.CompareTag("Workbench")) {
+				else if(stationFound.CompareTag("Workbench") && stationFound.GetComponent<Workbench>().GetPlacedObjectsCount() > 1) {
 
+					playerAnim.SetBool("Work", true);
 					stationFound.GetComponent<Workbench>().CraftWeapon();
 				}
 			}
@@ -241,7 +242,7 @@ public class PlayerController : MonoBehaviour {
 
 			for(int i = 0; i < stationsFound.Length; i++) {
 
-				float stationDistance = Vector3.Distance(this.transform.position - 0.5f * Vector3.forward, stationsFound[i].transform.position);
+				float stationDistance = Vector3.Distance(this.transform.position, stationsFound[i].transform.position);
 
 				if(stationDistance < closestDistance) {
 
@@ -481,7 +482,7 @@ public class PlayerController : MonoBehaviour {
 			else if(pickedUpObject.name.Contains("Broken Leather")) { stationGuideImage.sprite = tanRackIcon; }
 			else if(pickedUpObject.name.Contains("Tanned Leather")) { stationGuideImage.sprite = workbenchIcon; }
 			else if(pickedUpObject.name.Contains("Wood")) { stationGuideImage.sprite = workbenchIcon; }
-			else if(pickedUpObject.name.Contains("Finished")) { stationGuideImage.enabled = false; }
+			else { stationGuideImage.enabled = false; }
 		}
 		else {
 

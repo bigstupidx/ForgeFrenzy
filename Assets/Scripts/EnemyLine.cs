@@ -68,7 +68,7 @@ public class EnemyLine : MonoBehaviour {
 		this.transform.position = Vector3.MoveTowards(this.transform.position, losePosition, moveSpeed * Time.deltaTime);
 
 		CheckWarningConditions();
-		CheckEndGameConditions();
+		CheckLoseCondition();
 	}
 
 	void CheckWarningConditions () {
@@ -85,17 +85,15 @@ public class EnemyLine : MonoBehaviour {
 		}
 	}
 
-	void CheckEndGameConditions () {
+	void CheckLoseCondition () {
 
-		if(Vector3.Distance(this.transform.position, winPosition) < 0.1f) {
+		if(Vector3.Distance(this.transform.position, losePosition) < 0.1f) {
 
-			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlayersWin();
-			StopAllCoroutines();
-		}
-		else if(Vector3.Distance(this.transform.position, losePosition) < 0.1f) {
-
-			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlayersLose();
-			StopAllCoroutines();
+			if(GameObject.FindGameObjectWithTag("GameController").GetComponent<LevelTwoController>()) {
+			
+				GameObject.FindGameObjectWithTag("GameController").GetComponent<LevelTwoController>().LostGame();
+				StopAllCoroutines();
+			}
 		}
 	}
 
@@ -258,6 +256,16 @@ public class EnemyLine : MonoBehaviour {
         moveSpeed = 1;
     }
 
+	public void SpeedUpMovement () {
+
+		moveSpeed += 0.01f;
+	}
+
+	public void SlowDownMovement () {
+
+		moveSpeed -= 0.01f;
+	}
+
 	public void CreateSpecificWeaponDropoff (Weapon weaponType, float destroyTime = 60) {
 
 		Vector3 spawnPosition = GetDropoffPosition();
@@ -271,5 +279,13 @@ public class EnemyLine : MonoBehaviour {
 		else if(weaponType == Weapon.Shield) { weaponSprite = shieldTimerSprite; }
 		else if(weaponType == Weapon.Sword) { weaponSprite = swordTimerSprite; }
 		newWeaponDropoff.GetComponent<Image>().sprite = weaponSprite;
+	}
+
+	public void DeleteAllWeaponDropoffs () {
+
+		for(int i = 0; i < weaponDropoffParent.transform.childCount; i++) {
+
+			Destroy(weaponDropoffParent.transform.GetChild(i).gameObject);
+		}
 	}
 }

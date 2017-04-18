@@ -22,6 +22,9 @@ public class Workbench : MonoBehaviour {
 	[SerializeField] GameObject finishedShieldPrefab;
 	[SerializeField] GameObject failedCraft;
 	[SerializeField] AudioClip placeAudioClip;
+	[SerializeField] GameObject xButtonGameobject;
+	[SerializeField] GameObject aButtonGameobject;
+	[SerializeField] ParticleSystem particleSystem;
 
 	AudioSource audioSource;
 	List<GameObject> placedGameObjects = new List<GameObject>();
@@ -33,6 +36,26 @@ public class Workbench : MonoBehaviour {
 
 		audioSource = this.GetComponent<AudioSource>();
 		ResetCraftingBar();
+	}
+
+	void OnTriggerEnter (Collider other) {
+
+		if (other.CompareTag ("Player")) {
+			
+			if(other.GetComponent<PlayerController>().HasObject()) {
+
+				aButtonGameobject.SetActive(true);
+			}
+		}
+	}
+
+	void OnTriggerExit(Collider other) {
+
+		if (other.CompareTag ("Player")) {
+
+			aButtonGameobject.SetActive(false);
+			xButtonGameobject.SetActive(false);
+		}
 	}
 
 	public void SetPlayerCrafting(GameObject player) {
@@ -72,6 +95,8 @@ public class Workbench : MonoBehaviour {
 			placedMaterials.Add(Materials.Leather);
 		}
 
+		aButtonGameobject.SetActive(false);
+		if(placedGameObjects.Count > 1) { xButtonGameobject.SetActive(true); }
 		audioSource.clip = placeAudioClip;
 		audioSource.Play();
 	}
@@ -92,7 +117,9 @@ public class Workbench : MonoBehaviour {
 
 			if (craftingTimer == 0) {
 
+				for(int i = 0; i < placedGameObjects.Count; i++) { placedGameObjects[i].GetComponent<SpriteRenderer>().enabled = false; }
 				craftFillBar.SetActive (true);
+				particleSystem.Play();
 			}
 
 			if (craftingTimer < maxCraftingTime) {
@@ -160,5 +187,13 @@ public class Workbench : MonoBehaviour {
 		craftingTimer = 0;
 		craftFill.fillAmount = 0;
 		craftFillBar.SetActive(false);
+		xButtonGameobject.SetActive(false);
+		aButtonGameobject.SetActive(false);
+		particleSystem.Stop();
+	}
+
+	public int GetPlacedObjectsCount () {
+
+		return placedGameObjects.Count;
 	}
 }

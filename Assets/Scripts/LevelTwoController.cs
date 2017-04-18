@@ -1,10 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+enum GameState { InProgress, Lost, Won };
 
 [DisallowMultipleComponent]
 public class LevelTwoController : MonoBehaviour {
-	
+
+	[SerializeField] Text endGameText;
+	[SerializeField] Image cameraOverlay;
+	[SerializeField] EnemyLine enemyLine;
+	[SerializeField] float winTime = 180;
+
+	GameState gameState = GameState.InProgress;
+	float timer = 0;
+	bool endConversationFinished = false;
+
 	void Start () {
 
 		ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[0]);
@@ -13,6 +26,8 @@ public class LevelTwoController : MonoBehaviour {
 	void Update () {
 
 		UpdateDialogue();
+		if(gameState == GameState.InProgress) { CheckEndGameConditions(); }
+		if(endConversationFinished) { FadeScreenToBlack(); }
 	}
 
 	void UpdateDialogue () {
@@ -30,20 +45,60 @@ public class LevelTwoController : MonoBehaviour {
 			}
 		}
 
-		// Check if intro convo is finished
-		if(ConversationManager.Instance._IsTalking() == false /*&& uiController.gameObject.activeSelf == false*/) {
-			Debug.Log("Convo finished");
-//			currentState = TutorialState.SHIELD;
-//			uiController.gameObject.SetActive(true);
-//			uiController.ShowShieldInstructions();
-//			uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
-//			for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
-		}
+		// Check if win convo is finished
+		if(ConversationManager.Instance._IsTalking() == false && gameState != GameState.InProgress) {
 
-		// Check if tutorial complete
-//		if(ConversationManager.Instance._IsTalking() == false && axeCount == requiredItemCount) {
-//
-//			StartCoroutine(FadeSceneToBlack());
-//		}
+			endConversationFinished = true;
+		}
+	}
+
+	void CheckEndGameConditions () {
+
+		if(timer < winTime) {
+
+			timer += Time.deltaTime;
+		}
+		else {
+
+			enemyLine.StopAllCoroutines();
+			enemyLine.StopMovement();
+			ParticleSystem[] fightClouds = enemyLine.GetComponentsInChildren<ParticleSystem>();
+			foreach(ParticleSystem fightcloud in fightClouds) { fightcloud.Stop(); }
+			AudioSource[] enemyLineAudio = enemyLine.GetComponentsInChildren<AudioSource> ();
+			foreach (AudioSource audioSource in enemyLineAudio) { audioSource.Stop(); }
+			gameState = GameState.Won;
+			ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[1]);
+		}
+	}
+
+	void FadeScreenToBlack () {
+
+		float newAlpha = cameraOverlay.color.a + Time.deltaTime;
+		if(newAlpha < 1) {
+
+			cameraOverlay.color = new Color(0, 0, 0, newAlpha);
+		}
+		else {
+
+			if(gameState == GameState.Won) {
+
+				SceneManager.LoadScene(0);
+			}
+			else {
+
+				SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+			}
+		}
+	}
+
+	public void LostGame () {
+
+		if(gameState != GameState.Lost) {
+			
+			endGameText.gameObject.SetActive(true);
+			cameraOverlay.color = Color.clear;
+			gameState = GameState.Lost;
+			ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[2]);
+		}
 	}
 }

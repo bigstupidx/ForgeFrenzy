@@ -25,6 +25,8 @@ public class WeaponDropoff : MonoBehaviour {
 
 		if(dropoffTimer >= destroyTime) {
 
+			EnemyLine enemyLine = this.GetComponentInParent<EnemyLine>();
+			enemyLine.SpeedUpMovement();
 			Destroy(this.gameObject);
 		}
 		else {
@@ -64,6 +66,9 @@ public class WeaponDropoff : MonoBehaviour {
 
 			// Reward players
 			// Play any feedback (audio, particle effects)
+
+			EnemyLine enemyLine = this.GetComponentInParent<EnemyLine>();
+			enemyLine.SlowDownMovement();
 
 			// Increase weapon count
 			LevelOneController levelOneController = GameObject.FindGameObjectWithTag("GameController").GetComponent<LevelOneController>();
