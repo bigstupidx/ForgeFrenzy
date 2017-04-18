@@ -54,7 +54,7 @@ public class Woodworks : MonoBehaviour {
 		if (woodCuttingTimer == 0) {
 
 			woodCuttingBar.SetActive (true);
-			xButtonGameobject.SetActive (false);
+			//xButtonGameobject.SetActive (false);
 			woodBarFill.fillAmount = 0;
 		}
 

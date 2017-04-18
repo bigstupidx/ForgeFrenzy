@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
 public class LevelOneController : MonoBehaviour {
@@ -10,6 +11,7 @@ public class LevelOneController : MonoBehaviour {
     TutorialState currentState = TutorialState.SHIELD;
 
     [SerializeField] GameUIController uiController;
+	[SerializeField] Image cameraOverlay;
 
     [SerializeField] GameObject farLine;
     [SerializeField] GameObject midLine;
@@ -66,6 +68,12 @@ public class LevelOneController : MonoBehaviour {
 			uiController.ShowInstructions("Quick! Make 3 Shields for your army!");
 			for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Shield, 1000); }
 		}
+
+		// Check if tutorial complete
+		if(ConversationManager.Instance._IsTalking() == false && axeCount == requiredItemCount) {
+
+			StartCoroutine(FadeSceneToBlack());
+		}
 	}
 
     void CheckArmyPosition() {
@@ -96,6 +104,7 @@ public class LevelOneController : MonoBehaviour {
                 uiController.ShowInstructions("Quick! Make 3 Swords for your army!");
 				for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Sword, 1000); }
                 enemyLine.GetComponent<EnemyLine>().RestartMovement();
+				ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[1]);
             }
         }
     }
@@ -114,6 +123,7 @@ public class LevelOneController : MonoBehaviour {
                 uiController.ShowInstructions("Quick! Make 3 Axes for your army!");
 				for(int i = 0; i < 2; i++) { enemyLine.GetComponent<EnemyLine>().CreateSpecificWeaponDropoff(Weapon.Axe, 1000); }
                 enemyLine.GetComponent<EnemyLine>().RestartMovement();
+				ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[2]);
             }
         }
     }
@@ -135,9 +145,25 @@ public class LevelOneController : MonoBehaviour {
 				foreach (ParticleSystem fightCloud in enemyLineFightClouds) { fightCloud.Stop(); }
 				AudioSource[] enemyLineAudio = enemyLine.GetComponentsInChildren<AudioSource> ();
 				foreach (AudioSource audioSource in enemyLineAudio) { audioSource.Stop(); }
+				ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[3]);
             }
         }
     }
+
+	IEnumerator FadeSceneToBlack () {
+
+		float newAlpha = cameraOverlay.color.a + Time.deltaTime;
+
+		if(newAlpha < 1) {
+
+			cameraOverlay.color = new Color(0, 0, 0, newAlpha);
+			yield return null;
+		}
+		else {
+
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+		}
+	}
 }
 
 

@@ -151,6 +151,7 @@ public class PlayerController : MonoBehaviour {
 			
 			if (pickedUpObject == null) {
 
+				for(int i = 0; i < carryPosition.childCount; i++) { Destroy(carryPosition.GetChild(i).gameObject); }
 				FindPickup ();
 			}
 			else if (pickedUpObject != null) {
@@ -307,6 +308,7 @@ public class PlayerController : MonoBehaviour {
 
 		if (pickedUpObject.GetComponent<ChoppedWood> ()) { pickedUpObject.GetComponent<ChoppedWood> ().HidePickedUpUI (); }
 		pickedUpObject = null;
+		for(int i = 0; i < carryPosition.childCount; i++) { Destroy(carryPosition.GetChild(i).gameObject); }
 	}
 
 	void FindPickup () {

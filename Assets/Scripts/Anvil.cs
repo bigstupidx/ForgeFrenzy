@@ -92,7 +92,7 @@ public class Anvil : MonoBehaviour {
 
 			if(hammeringTimer == 0) {
 
-				xButtonGameobject.SetActive(false);
+				//xButtonGameobject.SetActive(false);
 				hammeringBar.SetActive(true);
 				hammeringBarFill.fillAmount = 0;
 			}

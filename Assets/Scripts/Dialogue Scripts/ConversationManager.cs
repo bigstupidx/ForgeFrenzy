@@ -97,6 +97,7 @@ public class ConversationManager : MonoBehaviour {
     {
         if(!talking)
         {
+			dialogueCanvas.gameObject.SetActive(true);
             StartCoroutine(DisplayConversation(conversation));
         }
     }
