@@ -67,6 +67,11 @@ public class EnemyLine : MonoBehaviour {
 		// Move enemy line
 		this.transform.position = Vector3.MoveTowards(this.transform.position, losePosition, moveSpeed * Time.deltaTime);
 
+		if(weaponDropoffParent.transform.childCount < 2 && isLevelOne == false) {
+
+			Weapon newWeapon = (Weapon) Random.Range(0, 3);
+			CreateSpecificWeaponDropoff(newWeapon);
+		}
 		CheckWarningConditions();
 		CheckLoseCondition();
 	}
@@ -173,7 +178,7 @@ public class EnemyLine : MonoBehaviour {
 		Bounds bounds = this.GetComponent<Collider> ().bounds;
 		Vector3 spawnLocation = new Vector3 (Random.Range (bounds.min.x, bounds.max.x), this.transform.position.y, this.transform.position.z - 6);
 
-		if (Random.value < 0.7f) {
+		if (Random.value < 0.6f) {
 			Instantiate (brokenMetal, spawnLocation, Quaternion.identity);
 		}
 		else {

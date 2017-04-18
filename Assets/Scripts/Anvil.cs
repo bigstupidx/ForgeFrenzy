@@ -14,6 +14,7 @@ public class Anvil : MonoBehaviour {
 	[SerializeField] GameObject hammeredWeapon;
 	[SerializeField] GameObject aButtonGameobject;
 	[SerializeField] GameObject xButtonGameobject;
+	[SerializeField] ParticleSystem particleSystem;
 
 	GameObject playerHammering;
 	GameObject placedObject;
@@ -95,6 +96,7 @@ public class Anvil : MonoBehaviour {
 				//xButtonGameobject.SetActive(false);
 				hammeringBar.SetActive(true);
 				hammeringBarFill.fillAmount = 0;
+				particleSystem.Play();
 			}
 
 			if (hammeringTimer < maxHammeringTime) {
@@ -130,5 +132,6 @@ public class Anvil : MonoBehaviour {
 		hammeringBar.SetActive(false);
 		aButtonGameobject.SetActive(false);
 		xButtonGameobject.SetActive(false);
+		particleSystem.Stop();
 	}
 }
