@@ -13,6 +13,8 @@ public class WeaponDropoff : MonoBehaviour {
 
 	Weapon weaponRequired;
 
+	public Animator anim;
+
 
 	void Update () {
 
@@ -22,6 +24,8 @@ public class WeaponDropoff : MonoBehaviour {
 	void UpdateTimer () {
 
 		dropoffTimer += Time.deltaTime;
+
+		anim.speed = 1 + (dropoffTimer / destroyTime)*2;
 
 		if(dropoffTimer >= destroyTime) {
 

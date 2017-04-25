@@ -271,7 +271,7 @@ public class EnemyLine : MonoBehaviour {
 		moveSpeed -= 0.01f;
 	}
 
-	public void CreateSpecificWeaponDropoff (Weapon weaponType, float destroyTime = 60) {
+	public void CreateSpecificWeaponDropoff (Weapon weaponType, float destroyTime = 120) {
 
 		Vector3 spawnPosition = GetDropoffPosition();
 		GameObject newWeaponDropoff = Instantiate(weaponDropoffPrefab, spawnPosition, Quaternion.identity) as GameObject;
