@@ -141,6 +141,7 @@ public class Workbench : MonoBehaviour {
 
 				placedGameObjects = new List<GameObject> ();
 				placedMaterials = new List<Materials> ();
+				placedGameObjects.Add (newWeapon);
 
 				playerCrafting.GetComponentInChildren<Animator>().SetBool("Work", false);
 			}
