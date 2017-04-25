@@ -4,23 +4,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-enum GameState { InProgress, Lost, Won };
+enum GameState { Intro, InProgress, Lost, Won };
 
 [DisallowMultipleComponent]
 public class LevelTwoController : MonoBehaviour {
 
+	[SerializeField] Text timerText;
 	[SerializeField] Text endGameText;
 	[SerializeField] Image cameraOverlay;
 	[SerializeField] EnemyLine enemyLine;
 	[SerializeField] float winTime = 180;
 
-	GameState gameState = GameState.InProgress;
+	GameState gameState = GameState.Intro;
 	float timer = 0;
 	bool endConversationFinished = false;
 
 	void Start () {
 
 		ConversationManager.Instance.StartConversation(this.GetComponent<ConversationComponent>().Conversations[0]);
+		if(timerText) { timerText.text = "3:00"; }
 	}
 
 	void Update () {
@@ -45,8 +47,13 @@ public class LevelTwoController : MonoBehaviour {
 			}
 		}
 
+		// Check if start convo is finished
+		if(ConversationManager.Instance._IsTalking() == false && gameState == GameState.Intro) {
+
+			gameState = GameState.InProgress;
+		}
 		// Check if win convo is finished
-		if(ConversationManager.Instance._IsTalking() == false && gameState != GameState.InProgress) {
+		else if(ConversationManager.Instance._IsTalking() == false && gameState != GameState.InProgress) {
 
 			endConversationFinished = true;
 		}
@@ -57,6 +64,8 @@ public class LevelTwoController : MonoBehaviour {
 		if(timer < winTime) {
 
 			timer += Time.deltaTime;
+			float remainingTime = winTime - timer;
+			if(timerText) { timerText.text = ((int) remainingTime / 60).ToString("0") + ":" + ((int) remainingTime % 60).ToString("00"); }
 		}
 		else {
 

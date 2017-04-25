@@ -109,7 +109,8 @@ public class PlayerController : MonoBehaviour {
 
 			// Move Player
 			rb.MovePosition (this.transform.position + moveSpeed * new Vector3 (horizontalAxis, 0, verticalAxis) * Time.deltaTime);
-		} else {
+		}
+		else {
 
 			playerAnim.SetBool("Move", false);
 
@@ -185,6 +186,10 @@ public class PlayerController : MonoBehaviour {
 					playerAnim.SetBool("Work", true);
 					stationFound.GetComponent<Workbench>().CraftWeapon();
 				}
+			}
+			else {
+
+				playerAnim.SetBool("Work", false);
 			}
 		}
 		else if (player.GetButtonUp ("Action")) {
@@ -466,7 +471,9 @@ public class PlayerController : MonoBehaviour {
 		pickedUpObject.GetComponent<Collider> ().enabled = false;
 		UpdateStationGuideIcon();
 
+		playerAnim.SetBool("Work", false);
 		playerAnim.SetBool ("Carry", true);
+		playerAnim.SetBool ("Facing", true);
 	}
 
 	void UpdateStationGuideIcon () {

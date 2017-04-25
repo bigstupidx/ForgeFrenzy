@@ -132,16 +132,17 @@ public class Workbench : MonoBehaviour {
 
 				ResetCraftingBar ();
 				GameObject weaponPrefab = DetermineWeaponCreated ();
+				foreach (GameObject placedObject in placedGameObjects) { Destroy (placedObject.gameObject); }
 				GameObject newWeapon = Instantiate (weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-				playerCrafting.GetComponent<PlayerController> ().ReceiveItem (newWeapon);
-
-				foreach (GameObject placedObject in placedGameObjects) {
-
-					Destroy (placedObject.gameObject);
-				}
+				//playerCrafting.GetComponent<PlayerController> ().ReceiveItem (newWeapon);
+				newWeapon.transform.SetParent(this.transform);
+				newWeapon.transform.localPosition = new Vector3(0.22f, 0.67f, 0);
+				newWeapon.transform.localRotation = Quaternion.Euler(15, -90, 0);
 
 				placedGameObjects = new List<GameObject> ();
 				placedMaterials = new List<Materials> ();
+
+				playerCrafting.GetComponentInChildren<Animator>().SetBool("Work", false);
 			}
 		}
 	}
